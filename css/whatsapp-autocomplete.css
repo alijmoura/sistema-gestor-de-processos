@@ -1,0 +1,111 @@
+/**
+ * Estilos para autocomplete de mensagens rapidas no WhatsApp
+ * Alinhado com a identidade visual da page-whatsapp
+ */
+
+.quick-messages-autocomplete-dropdown {
+  position: fixed;
+  z-index: var(--z-popover, 1070);
+  min-width: 18rem;
+  max-width: min(34rem, 92vw);
+  max-height: 20rem;
+  overflow-y: auto;
+  border: 1px solid var(--wa-border-color, var(--border-color));
+  border-radius: var(--border-radius-md);
+  background: var(--wa-panel-bg, var(--bg-surface));
+  box-shadow: var(--shadow-md);
+  color: var(--wa-text-main, var(--text-primary));
+  animation: whatsappAutocompleteEnter 120ms ease;
+}
+
+.quick-messages-autocomplete-dropdown .autocomplete-item {
+  padding: 0.58rem 0.76rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--wa-border-soft, var(--border-subtle));
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.quick-messages-autocomplete-dropdown .autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.quick-messages-autocomplete-dropdown .autocomplete-item:hover,
+.quick-messages-autocomplete-dropdown .autocomplete-item.selected {
+  background: color-mix(in srgb, var(--success) 14%, var(--wa-panel-bg, var(--bg-surface)) 86%);
+}
+
+.quick-messages-autocomplete-dropdown .autocomplete-item code {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-semibold);
+  color: color-mix(in srgb, var(--success) 90%, var(--text-primary) 10%);
+  background: color-mix(in srgb, var(--success) 12%, var(--wa-panel-bg, var(--bg-surface)) 88%);
+  border-radius: 999px;
+  padding: 0.12rem 0.48rem;
+}
+
+.quick-messages-autocomplete-dropdown .autocomplete-item .text-muted {
+  color: var(--wa-text-sub, var(--text-muted)) !important;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.quick-messages-autocomplete-dropdown .badge {
+  font-size: 0.66rem;
+  font-weight: var(--font-weight-medium);
+  border-radius: 999px;
+}
+
+.quick-messages-autocomplete-dropdown::-webkit-scrollbar {
+  width: 0.45rem;
+}
+
+.quick-messages-autocomplete-dropdown::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--wa-border-color, var(--border-color)) 28%, transparent);
+  border-radius: 999px;
+}
+
+.quick-messages-autocomplete-dropdown::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--wa-icon-color, var(--text-secondary)) 52%, transparent);
+  border-radius: 999px;
+}
+
+.quick-messages-autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--wa-icon-color, var(--text-secondary)) 75%, transparent);
+}
+
+.quick-messages-autocomplete-dropdown .text-muted.small {
+  padding: 0.56rem 0.74rem;
+  text-align: center;
+  color: var(--wa-text-sub, var(--text-muted)) !important;
+}
+
+#whatsapp-message-input {
+  resize: none;
+  overflow-y: hidden;
+  max-height: 7.5rem;
+  min-height: 2.5rem;
+  min-width: 0;
+  flex: 1 1 auto;
+  line-height: 1.35;
+  transition: height 0.1s ease;
+}
+
+#whatsapp-message-input::placeholder {
+  color: var(--wa-text-sub, var(--text-muted));
+  font-style: normal;
+}
+
+@keyframes whatsappAutocompleteEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+*.local
+serviceAccountKey.json
+**/serviceAccountKey.json
+
+# Firebase local state and logs
+.firebase/
+.firebase/*
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+
+# Runtime logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test and coverage outputs
+coverage/
+.nyc_output/
+
+# Temporary/cache files
+.tmp/
+.tmp_*
+*.tmp
+.cache/
+.eslintcache
+
+# Build outputs (common)
+dist/
+build/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+
+#contexto para IA's
+AGENTS.md
+CLAUDE.md
+.github/

@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp - Sistema Gestor de Processos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/modal-standard.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/whatsapp-advanced.css" />
+  <link rel="stylesheet" href="css/whatsapp-autocomplete.css" />
+  <script src="js/themeInit.js" defer></script>
+</head>
+<body>
+  <div id="sidebar-shell-mount"></div>
+  <script src="js/sidebarShell.js"></script>
+  <script>
+    window.SidebarShell.render({
+      mountId: 'sidebar-shell-mount',
+      mode: 'standalone',
+      activePage: 'whatsapp'
+    });
+  </script>
+
+  <main id="main-content">
+<div id="page-whatsapp" class="page active">
+        <div class="whatsapp-shell">
+          <header class="whatsapp-topbar">
+            <div class="topbar-title">
+              <span class="topbar-icon"><i class="bi bi-whatsapp"></i></span>
+              <div>
+                <h2>WhatsApp</h2>
+                <p class="topbar-subtitle">Atendimento ao cliente e comunicação interna</p>
+              </div>
+            </div>
+            <div class="topbar-actions">
+              <button type="button" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex align-items-center" id="whatsapp-toggle-sidebar-btn" aria-pressed="false">
+                <i class="bi bi-layout-sidebar-inset me-1"></i>
+                <span data-label>Ocultar lista</span>
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex align-items-center" id="whatsapp-toggle-info-btn" aria-pressed="false">
+                <i class="bi bi-layout-sidebar-inset-reverse me-1"></i>
+                <span data-label>Ocultar detalhes</span>
+              </button>
+              <button class="btn btn-outline-success btn-sm" onclick="window.open('whatsapp-dashboard.html', '_blank')">
+                <i class="bi bi-graph-up me-1"></i> Dashboard
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="window.open('whatsapp-workflows.html', '_blank')" title="Configurar workflows automatizados do bot">
+                <i class="bi bi-robot me-1"></i> Workflows Bot
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" onclick="window.__WHATSAPP_UI__.setChatsFilter('all')">
+                <i class="bi bi-arrow-repeat me-1"></i> Atualizar lista
+              </button>
+            </div>
+          </header>
+
+          <!-- <section class="whatsapp-summary" aria-label="Indicadores do WhatsApp">
+            <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-xl-4">
+              <div class="col">
+                <div class="card whatsapp-summary-card h-100 shadow-sm">
+                  <div class="card-body d-flex align-items-start">
+                    <div class="summary-icon text-success">
+                      <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <p class="text-uppercase text-muted small mb-1">Total de conversas</p>
+                      <h3 class="mb-1 fw-bold" id="whatsapp-summary-total">0</h3>
+                      <small class="text-muted d-block">Inclui ativas, aguardando e fila</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card whatsapp-summary-card h-100 shadow-sm">
+                  <div class="card-body d-flex align-items-start">
+                    <div class="summary-icon text-primary">
+                      <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <p class="text-uppercase text-muted small mb-1">Atendimentos ativos</p>
+                      <h3 class="mb-1 fw-bold" id="whatsapp-summary-active">0</h3>
+                      <small class="text-muted d-block">Conversas atribuídas a agentes</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card whatsapp-summary-card h-100 shadow-sm">
+                  <div class="card-body d-flex align-items-start">
+                    <div class="summary-icon text-warning">
+                      <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <p class="text-uppercase text-muted small mb-1">Fila aguardando</p>
+                      <h3 class="mb-1 fw-bold" id="whatsapp-summary-waiting">0</h3>
+                      <small class="text-muted d-block">Clientes aguardando atribuição</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card whatsapp-summary-card h-100 shadow-sm">
+                  <div class="card-body d-flex align-items-start">
+                    <div class="summary-icon text-info">
+                      <i class="bi bi-emoji-smile"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <p class="text-uppercase text-muted small mb-1">Satisfação média</p>
+                      <h3 class="mb-1 fw-bold" id="whatsapp-summary-satisfaction">--</h3>
+                      <small class="text-muted d-block">Últimos 7 dias</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section> -->
+
+          <div class="whatsapp-body">
+            <aside class="whatsapp-sidebar">
+              <div class="sidebar-section">
+                <div class="sidebar-heading">
+                  <h3>Conversas</h3>
+                  <span class="badge" id="whatsapp-sidebar-badge">0</span>
+                </div>
+                
+                <!-- ? NOVO: Seletor de Números WhatsApp -->
+                <div class="mb-2" id="whatsapp-phone-selector-container">
+                  <div id="whatsapp-phone-selector">
+                    <!-- Seletor de números renderizado pelo whatsappUI.js -->
+                  </div>
+                </div>
+                
+                <div class="search-wrapper">
+                  <i class="bi bi-search"></i>
+                  <input type="text" id="whatsapp-search-input" placeholder="Buscar por cliente, telefone, tag, agente ou processo" aria-label="Buscar conversa">
+                </div>
+                
+                <!-- ? NOVO: Filtro por agente (admin) -->
+                <div class="mt-2 d-none" id="whatsapp-filter-my-chats-container">
+                  <label class="form-label small mb-1" for="whatsapp-agent-filter">
+                    <i class="bi bi-people me-1"></i>Conversas por agente
+                  </label>
+                  <select class="form-select form-select-sm" id="whatsapp-agent-filter" aria-label="Filtrar conversas por agente">
+                    <option value="all">Todos os agentes</option>
+                  </select>
+                </div>
+                
+                <div class="d-flex gap-2 mt-2">
+                  <button type="button" class="btn btn-success flex-fill" id="whatsapp-new-chat-btn">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Nova conversa
+                  </button>
+                </div>
+
+                <div class="collapse mt-3" id="whatsapp-new-chat-modal" aria-labelledby="whatsappNewChatHeader">
+                  <div class="card border-0 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-success-subtle">
+                      <h5 class="mb-0" id="whatsappNewChatHeader">
+                        <i class="bi bi-chat-dots me-2"></i>Iniciar nova conversa
+                      </h5>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" id="whatsapp-new-chat-close-btn" aria-label="Fechar painel de nova conversa">
+                        <i class="bi bi-x"></i>
+                      </button>
+                    </div>
+                    <div class="card-body">
+                      <form id="whatsapp-new-chat-form" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                          <label for="whatsapp-new-chat-phone" class="form-label">
+                            Número do WhatsApp <span class="text-danger">*</span>
+                          </label>
+                          <input type="tel"
+                                 class="form-control"
+                                 id="whatsapp-new-chat-phone"
+                                 placeholder="Ex: 5541987654321"
+                                 required
+                                 pattern="^\d{12,13}$"
+                                 autocomplete="off">
+                          <div class="invalid-feedback">
+                            Informe um número válido (12-13 dígitos com código do país).
+                          </div>
+                          <div class="form-text">
+                            Formato: Código país + DDD + Número (Ex: 5541987654321)
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="whatsapp-new-chat-department" class="form-label">Departamento</label>
+                          <select class="form-select" id="whatsapp-new-chat-department" data-loaded="false">
+                            <option value="">Selecionar departamento (opcional)</option>
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="whatsapp-new-chat-message" class="form-label">Mensagem inicial</label>
+                          <textarea class="form-control"
+                                    id="whatsapp-new-chat-message"
+                                    rows="3"
+                                    placeholder="Digite a mensagem inicial (opcional)"></textarea>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between gap-2">
+                      <button type="button" class="btn btn-outline-secondary flex-fill" id="whatsapp-new-chat-cancel-btn">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                      </button>
+                      <button type="button" class="btn btn-primary flex-fill" id="whatsapp-start-chat-btn">
+                        <i class="bi bi-send me-1"></i>Iniciar conversa
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <nav class="whatsapp-tabs" role="tablist">
+                <button type="button" class="whatsapp-tab chat-filter-tab active" data-filter="all" onclick="window.__WHATSAPP_UI__.setChatsFilter('all')" title="Todas as conversas">
+                  <i class="bi bi-inbox-fill"></i>
+                  <span>Todas</span>
+                </button>
+                <button type="button" class="whatsapp-tab chat-filter-tab" data-filter="active" onclick="window.__WHATSAPP_UI__.setChatsFilter('active')" title="Conversas ativas">
+                  <i class="bi bi-lightning-charge"></i>
+                  <span>Ativas</span>
+                </button>
+                <button type="button" class="whatsapp-tab chat-filter-tab" data-filter="waiting" onclick="window.__WHATSAPP_UI__.setChatsFilter('waiting')" title="Aguardando atribuição">
+                  <i class="bi bi-hourglass-split"></i>
+                  <span>Aguardando</span>
+                </button>
+                <button type="button" class="whatsapp-tab chat-filter-tab" data-filter="resolved" onclick="window.__WHATSAPP_UI__.setChatsFilter('resolved')" title="Conversas finalizadas">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Finalizadas</span>
+                </button>
+              </nav>
+
+              <div class="sidebar-metrics">
+                <div class="metric">
+                  <span>Fila</span>
+                  <strong id="whatsapp-metric-queue">0</strong>
+                </div>
+                <div class="metric">
+                  <span>Tempo médio</span>
+                  <strong id="whatsapp-metric-time">--</strong>
+                </div>
+                <div class="metric">
+                  <span>Agentes online</span>
+                  <strong id="whatsapp-metric-agents">0</strong>
+                </div>
+              </div>
+
+              
+
+              <div class="whatsapp-chats-wrapper">
+                <div id="whatsapp-chats-list" class="whatsapp-chats-list"></div>
+                <div id="whatsapp-queue-list" class="whatsapp-queue-list d-none"></div>
+              </div>
+            </aside>
+
+            <section class="whatsapp-chat-region">
+              <div id="whatsapp-empty-state" class="whatsapp-empty-state">
+                <div class="empty-state-card">
+                  <i class="bi bi-chat-quote"></i>
+                  <h4>Escolha uma conversa</h4>
+                  <p>Selecione um cliente à esquerda para iniciar o atendimento.</p>
+                </div>
+              </div>
+
+              <div id="whatsapp-chat-panel" class="whatsapp-chat-panel d-none">
+                <header class="whatsapp-chat-header">
+                  <div class="chat-identification">
+                    <div class="avatar">
+                      <i class="bi bi-person-circle"></i>
+                    </div>
+                    <div class="chat-identification-body">
+                      <h5 class="mb-1" id="whatsapp-chat-title">Cliente</h5>
+                      <span class="text-muted small d-block" id="whatsapp-chat-subtitle">Online agora</span>
+                      <div class="chat-meta d-flex flex-wrap gap-2 mt-2 d-none" id="whatsapp-chat-meta"></div>
+                    </div>
+                  </div>
+                  <div class="chat-actions d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-secondary rounded-circle p-2" id="whatsapp-attachment-btn" title="Anexar arquivo">
+                      <i class="bi bi-paperclip"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-circle p-2" id="whatsapp-gallery-btn" title="Galeria de mídia">
+                      <i class="bi bi-images"></i>
+                    </button>
+                    <!-- ? Botão de Tags (abre painel collapse) -->
+                    <button class="btn btn-sm btn-outline-secondary rounded-circle p-2" id="whatsapp-tags-btn" title="Gerenciar tags">
+                      <i class="bi bi-tags"></i>
+                    </button>
+                    <!-- ? NOVO: Botões de Chamada -->
+                    <button class="btn btn-sm btn-outline-success rounded-circle p-2" id="whatsapp-voice-call-btn" title="Chamada de voz">
+                      <i class="bi bi-telephone-fill"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-circle p-2" id="whatsapp-video-call-btn" title="Chamada de vídeo">
+                      <i class="bi bi-camera-video-fill"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning rounded-circle p-2" id="whatsapp-transfer-btn" title="Transferir conversa">
+                      <i class="bi bi-arrow-left-right"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger rounded-circle p-2" id="whatsapp-resolve-btn" title="Finalizar conversa">
+                      <i class="bi bi-check2-circle"></i>
+                    </button>
+                    <div class="dropdown d-inline-block">
+                      <button class="btn btn-sm btn-outline-secondary rounded-circle p-2" id="whatsapp-more-actions-btn" title="Mais ações" 
+                              data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                          <a class="dropdown-item" href="#" data-bs-toggle="collapse" data-bs-target="#whatsapp-template-collapse" id="whatsapp-send-template-menu">
+                            <i class="bi bi-file-text me-2"></i>
+                            Enviar Template
+                          </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                          <a class="dropdown-item" href="#" id="whatsapp-view-contract-btn">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            Ver Processo Vinculado
+                          </a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item whatsapp-link-contract-action" href="#" id="whatsapp-link-contract-menu">
+                            <i class="bi bi-link-45deg me-2"></i>
+                            Vincular a Processo
+                          </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                          <a class="dropdown-item" href="#" id="whatsapp-export-chat-btn">
+                            <i class="bi bi-download me-2"></i>
+                            Exportar Conversa
+                          </a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item text-danger" href="#" id="whatsapp-delete-chat-btn">
+                            <i class="bi bi-trash me-2"></i>
+                            Excluir Conversa
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </header>
+
+                <div id="whatsapp-action-panels" class="mb-3">
+                  <div class="collapse" id="whatsapp-attachment-panel" data-whatsapp-action-panel>
+                    <div class="card border-2 border-primary shadow-sm">
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                          <i class="bi bi-paperclip text-primary"></i>
+                          Enviar Anexo
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-whatsapp-action-close="whatsapp-attachment-panel">
+                          <i class="bi bi-x-lg"></i>
+                          Fechar
+                        </button>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <label for="whatsapp-attachment-file-input" class="form-label">Arquivo</label>
+                          <input type="file" class="form-control" id="whatsapp-attachment-file-input"
+                                 accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,audio/*,video/*">
+                          <small class="form-text text-muted">
+                            Imagens até 5MB • Documentos até 100MB • Áudio/Vídeo até 16MB
+                          </small>
+                        </div>
+
+                        <div id="whatsapp-attachment-preview" class="mb-3"></div>
+
+                        <div class="mb-3">
+                          <label for="whatsapp-attachment-caption" class="form-label">Legenda (opcional)</label>
+                          <textarea class="form-control" id="whatsapp-attachment-caption" rows="2"
+                                    placeholder="Adicione uma legenda..."></textarea>
+                        </div>
+
+                        <div class="progress d-none mb-3">
+                          <div class="progress-bar progress-bar-striped progress-bar-animated"
+                               id="whatsapp-attachment-upload-progress"
+                               role="progressbar" style="width: 0%">0%</div>
+                        </div>
+                      </div>
+                      <div class="card-footer d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-whatsapp-action-close="whatsapp-attachment-panel">
+                          <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary" id="whatsapp-attachment-upload-btn">
+                          <i class="bi bi-send-fill me-1"></i>Enviar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="collapse" id="whatsapp-media-gallery-panel" data-whatsapp-action-panel>
+                    <div class="card border-2 border-info shadow-sm">
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                          <i class="bi bi-images text-info"></i>
+                          Galeria de Mídia
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-whatsapp-action-close="whatsapp-media-gallery-panel">
+                          <i class="bi bi-x-lg"></i>
+                          Fechar
+                        </button>
+                      </div>
+                      <div class="card-body" id="whatsapp-media-gallery-container">
+                        <div class="text-center text-muted py-5">
+                          <i class="bi bi-image display-4 d-block mb-3"></i>
+                          <p>Nenhum anexo nesta conversa</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="collapse" id="whatsapp-transfer-panel" data-whatsapp-action-panel>
+                    <div class="card border-2 border-warning shadow-sm">
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                          <i class="bi bi-arrow-left-right text-warning"></i>
+                          Transferir Conversa
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-whatsapp-action-close="whatsapp-transfer-panel">
+                          <i class="bi bi-x-lg"></i>
+                          Fechar
+                        </button>
+                      </div>
+                      <div class="card-body">
+                        <form id="whatsapp-transfer-form" class="needs-validation" novalidate>
+                          <div id="whatsapp-transfer-panel-body"></div>
+                        </form>
+                      </div>
+                      <div class="card-footer d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-whatsapp-action-close="whatsapp-transfer-panel">
+                          <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary" id="whatsapp-confirm-transfer-btn">
+                          <i class="bi bi-check-circle me-1"></i>Confirmar Transferência
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="collapse" id="whatsapp-link-contract-panel" data-whatsapp-action-panel>
+                    <div class="card border-2 border-success shadow-sm">
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                          <i class="bi bi-link-45deg text-success"></i>
+                          Vincular conversa a um processo
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-whatsapp-action-close="whatsapp-link-contract-panel">
+                          <i class="bi bi-x-lg"></i>
+                          Fechar
+                        </button>
+                      </div>
+                      <div class="card-body">
+                        <p class="mb-3 small text-muted">Pesquise pelo ID, nome do cliente, empreendimento ou telefone para localizar o processo desejado. A conversa atual será vinculada ao processo selecionado e o sistema agora permite mais de uma conversa associada ao mesmo processo.</p>
+
+                        <div id="contract-link-suggestion" class="d-none mb-3"></div>
+
+                        <form id="contract-link-search-form" class="needs-validation" novalidate>
+                          <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="contract-link-search-input" name="contractLinkSearch" placeholder="Ex.: JOÃO, 123ABC, Empreendimento..." minlength="3" required>
+                            <button type="submit" class="btn btn-primary" id="contract-link-search-btn">
+                              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                              <span class="ms-1">Buscar</span>
+                            </button>
+                          </div>
+                          <div class="invalid-feedback">
+                            Informe ao menos 3 caracteres para realizar a busca.
+                          </div>
+                        </form>
+
+                        <div id="contract-link-feedback" class="mb-3"></div>
+
+                        <div id="contract-link-results" class="list-group small"></div>
+
+                        <p class="text-muted small mt-3 mb-0">
+                          Caso o processo não apareça na lista, confirme se o cadastro contém os mesmos dados de telefone ou utilize o ID completo do processo.
+                        </p>
+                      </div>
+                      <div class="card-footer d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary" data-whatsapp-action-close="whatsapp-link-contract-panel">
+                          <i class="bi bi-x-circle me-1"></i>Fechar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="collapse" id="whatsapp-resolve-panel" data-whatsapp-action-panel>
+                    <div class="card border-2 border-success shadow-sm">
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                          <i class="bi bi-check-circle text-success"></i>
+                          Finalizar Atendimento
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-whatsapp-action-close="whatsapp-resolve-panel">
+                          <i class="bi bi-x-lg"></i>
+                          Fechar
+                        </button>
+                      </div>
+                      <div class="card-body">
+                        <form id="whatsapp-resolve-form" class="needs-validation" novalidate>
+                          <div class="mb-3">
+                            <label for="whatsapp-resolution-reason" class="form-label">
+                              Motivo do Encerramento <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="whatsapp-resolution-reason" required>
+                              <option value="Problema resolvido">Problema resolvido</option>
+                              <option value="Informação fornecida">Informação fornecida</option>
+                              <option value="Sem resposta do cliente">Sem resposta do cliente</option>
+                              <option value="Encaminhado para outro canal">Encaminhado para outro canal</option>
+                              <option value="Solicitação inválida">Solicitação inválida</option>
+                              <option value="Cliente satisfeito">Cliente satisfeito</option>
+                              <option value="Spam/Indevido">Spam/Indevido</option>
+                              <option value="Conversa duplicada">Conversa duplicada</option>
+                              <option value="Outros">Outros</option>
+                            </select>
+                            <div class="invalid-feedback">
+                              Selecione um motivo
+                            </div>
+                          </div>
+                          <div class="mb-3">
+                            <label for="whatsapp-resolution-notes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="whatsapp-resolution-notes" rows="3" placeholder="Adicione detalhes sobre a finalização (opcional)"></textarea>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label d-block">Satisfação do Cliente (Opcional)</label>
+                            <div class="btn-group w-100" role="group" aria-label="Avaliação de satisfação">
+                              <input type="radio" class="btn-check" name="whatsapp-satisfaction" id="sat-1" value="1">
+                              <label class="btn btn-outline-danger" for="sat-1">
+                                <i class="bi bi-emoji-frown"></i> 1
+                              </label>
+                              
+                              <input type="radio" class="btn-check" name="whatsapp-satisfaction" id="sat-2" value="2">
+                              <label class="btn btn-outline-warning" for="sat-2">
+                                <i class="bi bi-emoji-neutral"></i> 2
+                              </label>
+                              
+                              <input type="radio" class="btn-check" name="whatsapp-satisfaction" id="sat-3" value="3">
+                              <label class="btn btn-outline-info" for="sat-3">
+                                <i class="bi bi-emoji-smile"></i> 3
+                              </label>
+                              
+                              <input type="radio" class="btn-check" name="whatsapp-satisfaction" id="sat-4" value="4">
+                              <label class="btn btn-outline-primary" for="sat-4">
+                                <i class="bi bi-emoji-heart-eyes"></i> 4
+                              </label>
+                              
+                              <input type="radio" class="btn-check" name="whatsapp-satisfaction" id="sat-5" value="5">
+                              <label class="btn btn-outline-success" for="sat-5">
+                                <i class="bi bi-star-fill"></i> 5
+                              </label>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div class="card-footer d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" data-whatsapp-action-close="whatsapp-resolve-panel">
+                          <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-success" id="whatsapp-confirm-resolve-btn">
+                          <i class="bi bi-check-circle me-1"></i>Finalizar Atendimento
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ? NOVO: Painel de Gerenciamento de Tags -->
+                  <div class="collapse" id="whatsapp-tags-panel" data-whatsapp-action-panel>
+                    <div class="card border-2 border-primary shadow-sm">
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                          <i class="bi bi-tags text-primary"></i>
+                          Gerenciar Tags
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-whatsapp-action-close="whatsapp-tags-panel">
+                          <i class="bi bi-x-lg"></i>
+                          Fechar
+                        </button>
+                      </div>
+                      <div class="card-body">
+                        <!-- Campo de busca -->
+                        <div class="mb-3">
+                          <input type="text" class="form-control" id="whatsapp-tags-search" 
+                                 placeholder="Buscar tags..." autocomplete="off">
+                        </div>
+
+                        <!-- Lista de tags com checkboxes -->
+                        <div id="whatsapp-tags-list" class="scroll-y-md">
+                          <div class="text-center text-muted py-3">
+                            <small>Carregando tags...</small>
+                          </div>
+                        </div>
+
+                        <!-- Contador de tags selecionadas -->
+                        <div id="whatsapp-tags-counter" class="alert alert-info small mb-0 mt-3 d-none">
+                          <i class="bi bi-info-circle me-2"></i>
+                          <span id="whatsapp-tags-counter-text">Nenhuma tag aplicada</span>
+                        </div>
+                      </div>
+                      <div class="card-footer d-flex justify-content-between gap-2">
+                        <button type="button" class="btn btn-outline-primary" id="whatsapp-create-tag-btn">
+                          <i class="bi bi-plus-circle me-1"></i>Criar Nova Tag
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-whatsapp-action-close="whatsapp-tags-panel">
+                          <i class="bi bi-x-circle me-1"></i>Fechar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="whatsapp-messages-wrapper" id="whatsapp-messages-container"></div>
+
+                <!-- Collapse: Encaminhar Mensagem -->
+                <div class="collapse border-top" id="whatsapp-forward-collapse">
+                  <div class="card card-body bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h6 class="mb-0">
+                        <i class="bi bi-forward-fill me-2"></i>Encaminhar mensagem
+                      </h6>
+                      <button type="button" class="btn-close btn-sm" data-bs-toggle="collapse" data-bs-target="#whatsapp-forward-collapse" aria-label="Fechar"></button>
+                    </div>
+
+                    <div id="whatsapp-forward-preview" class="border rounded p-2 bg-white mb-3 small">
+                      <div class="text-muted">Selecione uma mensagem para encaminhar.</div>
+                    </div>
+
+                    <form id="whatsapp-forward-form" class="needs-validation" novalidate>
+                      <div class="mb-3">
+                        <label for="whatsapp-forward-target-select" class="form-label small">Encaminhar para conversa existente</label>
+                        <select class="form-select form-select-sm" id="whatsapp-forward-target-select">
+                          <option value="">Selecionar conversa</option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Selecione uma conversa ou informe um número válido.
+                        </div>
+                      </div>
+
+                      <div class="text-center text-muted mb-2">
+                        <small>ou</small>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="whatsapp-forward-phone" class="form-label small">Número do destinatário</label>
+                        <input type="tel" class="form-control form-control-sm" id="whatsapp-forward-phone" placeholder="Digite o número com DDD" autocomplete="off">
+                        <div class="invalid-feedback">Informe um número válido com DDD.</div>
+                        <small class="form-text text-muted">Use apenas números. O código do país (55) é aplicado automaticamente.</small>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="whatsapp-forward-note" class="form-label small">Comentário adicional (opcional)</label>
+                        <textarea class="form-control form-control-sm" id="whatsapp-forward-note" rows="2" placeholder="Compartilhe contexto com o destinatário"></textarea>
+                      </div>
+
+                      <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" data-bs-toggle="collapse" data-bs-target="#whatsapp-forward-collapse">
+                          <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary flex-fill" id="whatsapp-forward-confirm-btn">
+                          <i class="bi bi-forward-fill me-1"></i>Encaminhar
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Collapse: Enviar Template -->
+                <div class="collapse border-top" id="whatsapp-template-collapse">
+                  <div class="card card-body bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h6 class="mb-0">
+                        <i class="bi bi-file-text me-2"></i>Enviar Template
+                      </h6>
+                      <button type="button" class="btn-close btn-sm" data-bs-toggle="collapse" data-bs-target="#whatsapp-template-collapse" aria-label="Fechar"></button>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="template-select-collapse" class="form-label small fw-semibold">Escolha um Template</label>
+                      <select class="form-select form-select-sm" id="template-select-collapse">
+                        <option value="">-- Selecione um template --</option>
+                      </select>
+                    </div>
+
+                    <!-- Preview do Template -->
+                    <div id="template-preview-collapse" class="d-none mb-3">
+                      <div class="border rounded p-2 bg-white">
+                        <small class="text-muted d-block mb-1">
+                          <i class="bi bi-eye me-1"></i>Preview:
+                        </small>
+                        <div id="template-text-collapse" class="small text-pre-wrap"></div>
+                      </div>
+                    </div>
+
+                    <!-- Parâmetros do Template (dinâmico) -->
+                    <div id="template-params-collapse"></div>
+
+                    <!-- Alerta template não aprovado -->
+                    <div id="template-warning-collapse" class="alert alert-warning py-2 small d-none">
+                      <i class="bi bi-exclamation-triangle me-1"></i>
+                      Template precisa ser aprovado no Meta Business Manager.
+                    </div>
+
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" data-bs-toggle="collapse" data-bs-target="#whatsapp-template-collapse">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                      </button>
+                      <button type="button" class="btn btn-sm btn-primary flex-fill" id="send-template-collapse-btn" disabled>
+                        <i class="bi bi-send me-1"></i>Enviar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <footer class="whatsapp-input-wrapper">
+                  <div id="whatsapp-reply-preview" class="alert alert-secondary py-2 px-3 d-flex align-items-start justify-content-between gap-2 mb-2 d-none">
+                    <div class="me-2">
+                      <small class="text-uppercase fw-semibold text-muted d-block">Respondendo a <span class="reply-preview-author"></span></small>
+                      <div class="reply-preview-snippet small text-muted"></div>
+                    </div>
+                    <button type="button" class="btn-close" aria-label="Cancelar resposta" id="whatsapp-cancel-reply-btn"></button>
+                  </div>
+                  <form id="whatsapp-message-form" class="d-flex align-items-end gap-2">
+                    <button type="button" class="btn-attach" title="Anexar arquivo" id="whatsapp-inline-attachment-btn">
+                      <i class="bi bi-paperclip"></i>
+                    </button>
+                    <button type="button" class="btn-audio" id="whatsapp-audio-btn" title="Gravar mensagem de áudio" aria-pressed="false">
+                      <i class="bi bi-mic-fill"></i>
+                    </button>
+                    <textarea id="whatsapp-message-input" 
+                              placeholder="Digite sua mensagem (use / para mensagens rápidas)" 
+                              autocomplete="off"
+                              rows="1"></textarea>
+                    <button type="submit" class="btn-send" id="whatsapp-send-btn">
+                      <i class="bi bi-send-fill"></i>
+                    </button>
+                  </form>
+                  <div id="whatsapp-audio-indicator" class="alert alert-danger d-none small mt-2" role="status">
+                    <div class="d-flex flex-wrap align-items-center gap-3 w-100 audio-indicator-body">
+                      <div class="d-flex align-items-center gap-2 audio-indicator-leading">
+                        <span class="audio-indicator-icon text-danger"><i class="bi bi-record-circle-fill"></i></span>
+                        <span class="audio-indicator-text">Gravando... 00:00</span>
+                      </div>
+                      <div class="audio-preview-container flex-grow-1 d-none">
+                        <div class="whatsapp-audio-player audio-preview" data-player-role="preview">
+                          <button type="button" class="btn btn-link whatsapp-audio-toggle" aria-label="Reproduzir pré-visualização de áudio">
+                            <i class="bi bi-play-fill"></i>
+                          </button>
+                          <div class="whatsapp-audio-wave flex-grow-1">
+                            <div class="whatsapp-audio-progress">
+                              <div class="whatsapp-audio-progress-fill"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                              <span class="whatsapp-audio-current">00:00</span>
+                              <span class="whatsapp-audio-duration">--:--</span>
+                            </div>
+                          </div>
+                          <div class="whatsapp-audio-avatar ms-3">
+                            <div class="whatsapp-audio-avatar-fallback">
+                              <i class="bi bi-mic-fill"></i>
+                            </div>
+                          </div>
+                          <audio class="d-none whatsapp-audio-element" id="whatsapp-audio-preview-player" preload="metadata"></audio>
+                        </div>
+                      </div>
+                      <div class="audio-indicator-actions d-flex align-items-center gap-2 ms-auto">
+                        <button type="button" class="btn btn-sm btn-light text-danger fw-semibold" id="whatsapp-cancel-audio-btn">
+                          <i class="bi bi-x-circle me-1"></i>
+                          Cancelar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-none" id="whatsapp-discard-audio-btn">
+                          <i class="bi bi-arrow-counterclockwise me-1"></i>
+                          Descartar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-success d-none" id="whatsapp-send-audio-btn">
+                          <i class="bi bi-send-check-fill me-1"></i>
+                          Enviar áudio
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </footer>
+              </div>
+            </section>
+
+            <aside class="whatsapp-info-panel" id="whatsapp-info-panel">
+              <div class="info-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h4 class="mb-0">Resumo do cliente</h4>
+                  <button class="btn btn-sm btn-outline-primary" id="whatsapp-edit-client-btn" title="Editar informações">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                </div>
+                
+                <!-- Modo visualização -->
+                <dl class="info-list" id="whatsapp-client-summary">
+                  <div>
+                    <dt>Nome</dt>
+                    <dd id="whatsapp-info-name">--</dd>
+                  </div>
+                  <div>
+                    <dt>E-mail</dt>
+                    <dd id="whatsapp-info-email">--</dd>
+                  </div>
+                  <div>
+                    <dt>Número</dt>
+                    <dd id="whatsapp-info-number">--</dd>
+                  </div>
+                  <div>
+                    <dt>CPF/CNPJ</dt>
+                    <dd id="whatsapp-info-document">--</dd>
+                  </div>
+                  <div>
+                    <dt>Última interação</dt>
+                    <dd id="whatsapp-info-last">--</dd>
+                  </div>
+                </dl>
+                
+                <!-- Modo edição (oculto por padrão) -->
+                <div class="info-edit-form d-none" id="whatsapp-client-edit-form">
+                  <div class="mb-3">
+                    <label for="edit-client-name" class="form-label small">Nome do Cliente</label>
+                    <input type="text" class="form-control form-control-sm" id="edit-client-name" placeholder="Nome completo">
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-client-email" class="form-label small">E-mail</label>
+                    <input type="email" class="form-control form-control-sm" id="edit-client-email" placeholder="email@exemplo.com">
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-client-document" class="form-label small">CPF/CNPJ</label>
+                    <input type="text" class="form-control form-control-sm" id="edit-client-document" placeholder="000.000.000-00">
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-success btn-sm flex-fill" id="whatsapp-save-client-btn">
+                      <i class="bi bi-check-lg me-1"></i> Salvar
+                    </button>
+                    <button class="btn btn-secondary btn-sm flex-fill" id="whatsapp-cancel-edit-btn">
+                      <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-section">
+                <h4>Processo vinculado</h4>
+                <div class="info-card" id="whatsapp-info-contract">
+                  <div id="whatsapp-contract-content">
+                    <p class="text-muted small mb-2" id="whatsapp-contract-status-text">Nenhum processo vinculado.</p>
+                  </div>
+                  <div class="d-grid gap-2 mb-2 d-none" id="whatsapp-contract-actions">
+                    <button class="btn btn-outline-success btn-sm" id="whatsapp-contract-open-btn">
+                      <i class="bi bi-box-arrow-up-right me-1"></i> Abrir processo
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" id="whatsapp-contract-unlink-btn">
+                      <i class="bi bi-x-circle me-1"></i> Remover vínculo
+                    </button>
+                  </div>
+                  <button class="btn btn-outline-primary btn-sm w-100 whatsapp-link-contract-action" id="whatsapp-link-contract-btn">
+                    <i class="bi bi-link-45deg me-1"></i> Vincular processo
+                  </button>
+                </div>
+              </div>
+
+              <div class="info-section">
+                <h4>Notas rápidas</h4>
+                <textarea class="form-control form-control-sm" id="whatsapp-quick-notes" placeholder="Registre observações importantes sobre este cliente..." rows="5"></textarea>
+                <button class="btn btn-primary btn-sm mt-2 w-100" id="whatsapp-save-notes-btn">
+                  <i class="bi bi-save me-1"></i> Salvar notas
+                </button>
+              </div>
+              
+              <div class="info-section">
+                <h4>Histórico</h4>
+                <div class="info-timeline" id="whatsapp-info-timeline">
+                  <p class="text-muted small">Nenhum histórico disponível.</p>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="notification" class="notification"></div>
+
+  <script>
+    window.__AUTO_RENDER_UI_COMPONENTS__ = false;
+  </script>
+  <script type="module">
+    import { initWhatsAppShellUIComponents } from './js/uiComponents/whatsappShellInit.js';
+    initWhatsAppShellUIComponents();
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-check-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="js/debug.js" defer></script>
+  <script src="js/standaloneSidebar.js" defer></script>
+  <script src="js/whatsappQuickMessagesAutocomplete.js" defer></script>
+  <script type="module" src="js/uiHelpers.js"></script>
+  <script type="module" src="js/cacheService.js"></script>
+  <script type="module" src="js/pages/whatsappPageEntry.js"></script>
+  <script>
+    window.__APP_BUILD__ = '2026-04-24.18-40-27';
+  </script>
+  <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+</body>
+</html>
+

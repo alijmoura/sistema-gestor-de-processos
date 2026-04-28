@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Processos - Sistema Gestor de Processos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/modal-standard.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/ai-components.css" />
+  <script src="js/themeInit.js" defer></script>
+</head>
+<body>
+  <div id="sidebar-shell-mount"></div>
+  <script src="js/sidebarShell.js"></script>
+  <script>
+    window.SidebarShell.render({
+      mountId: 'sidebar-shell-mount',
+      mode: 'standalone',
+      activePage: 'processos'
+    });
+  </script>
+
+  <main id="main-content">
+    <div id="page-processos" class="page active">
+      <div class="list-header">
+        <div class="search-container">
+          <div class="input-group">
+            <input
+              type="text"
+              id="search-input"
+              class="form-control"
+              placeholder="Buscar por cliente, empreendimento..."
+            />
+            <button class="btn btn-outline-secondary d-none" type="button" id="search-clear-btn" aria-label="Limpar busca">
+              <i class="bi bi-x-lg"></i>
+            </button>
+            <button class="btn btn-primary" type="button" id="search-btn">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+          <div class="d-flex align-items-center gap-2 mt-2">
+            <span id="processos-search-indicator" class="badge text-bg-primary rounded-pill d-none"></span>
+          </div>
+        </div>
+        <div class="header-buttons d-flex flex-wrap gap-2 align-items-center">
+          <div class="dropdown" id="workflow-type-dropdown">
+            <button id="toggle-workflow-type-btn" class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-diagram-2 me-1"></i>Tipo: Associativo
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><button class="dropdown-item active" type="button" data-workflow="associativo">Processo Associativo</button></li>
+              <li><button class="dropdown-item" type="button" data-workflow="individual">Processo Individual</button></li>
+            </ul>
+          </div>
+
+          <button id="toggle-view-btn" class="btn btn-outline-primary">
+            Alternar para Lista
+          </button>
+
+          <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#filtersOffcanvas" aria-controls="filtersOffcanvas">
+            <i class="bi bi-funnel me-1"></i> Filtros e Opções
+            <span id="active-filters-badge" class="badge bg-primary rounded-pill ms-2 d-none">0</span>
+          </button>
+
+          <div class="dropdown" id="export-dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-download me-1"></i> Exportar
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li>
+                <button class="dropdown-item" type="button" id="export-csv-btn">
+                  <i class="bi bi-filetype-csv me-2"></i>Exportar CSV
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" type="button" id="export-csv-all-columns-btn">
+                  <i class="bi bi-table me-2"></i>CSV com Todas as Colunas
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <button id="open-add-modal-btn" class="btn btn-success">
+            <i class="bi bi-plus-lg me-1"></i>Novo Processo
+          </button>
+        </div>
+        <div id="bulk-actions-container" class="bulk-actions-container">
+          <span id="bulk-actions-counter"></span>
+          <button id="bulk-update-btn" class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#bulk-update-collapse" aria-expanded="false" aria-controls="bulk-update-collapse">
+            <i class="bi bi-pencil-square me-2"></i>
+            Alterar em Massa...
+          </button>
+        </div>
+
+        <div id="bulk-update-collapse-mount"></div>
+      </div>
+
+      <div id="processos-view-container" class="kanban-view-active">
+        <h2>Processos</h2>
+        <section id="listagem-header" class="view-content active">
+          <div class="list-header"></div>
+        </section>
+
+        <section id="list-section" class="view-content">
+          <div class="d-flex justify-content-end gap-2 mb-2">
+            <button id="toggle-header-btn" class="btn btn-sm btn-outline-secondary" type="button" title="Mostrar/Ocultar cabeçalho da tabela">
+              <i class="bi bi-chevron-up"></i>
+              <span class="ms-1">Ocultar Cabeçalho</span>
+            </button>
+          </div>
+
+          <div id="pagination-controls" class="pagination-controls">
+            <div class="rows-per-page-selector">
+              <label for="rows-per-page-select">Itens por página:</label>
+              <select id="rows-per-page-select">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <button id="prev-page-btn" class="btn btn-outline-secondary btn-sm">Anterior</button>
+            <div class="page-info" id="page-info"></div>
+            <button id="next-page-btn" class="btn btn-outline-secondary btn-sm">Próximo</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead id="table-header"></thead>
+              <tbody id="contract-list"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="kanban-section" class="view-content active">
+          <div id="kanban-board" class="kanban-board-scroll"></div>
+        </section>
+      </div>
+    </div>
+
+    <div id="bulk-update-modal" class="d-none" aria-hidden="true"></div>
+  </main>
+
+  <datalist id="datalist-vendedores"></datalist>
+  <datalist id="datalist-empreendimentos"></datalist>
+  <div id="notification" class="notification"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="js/pdfjsInit.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-check-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="js/debug.js" defer></script>
+  <script src="js/modernFormEnhancements.js" defer></script>
+  <script src="js/standaloneSidebar.js" defer></script>
+  <script src="js/errorManagementService.js" type="module"></script>
+  <script>
+    window.__AUTO_RENDER_UI_COMPONENTS__ = false;
+    window.__DISABLE_MAIN_AUTO_BOOTSTRAP__ = true;
+    window.__INITIAL_PAGE__ = 'processos';
+  </script>
+  <script type="module" src="js/modalManager.js"></script>
+  <script type="module" src="js/inlineSuggestFields.js"></script>
+  <script type="module">
+    import { initProcessosShellUIComponents } from './js/uiComponents/processosShellInit.js';
+    initProcessosShellUIComponents();
+  </script>
+  <script type="module" src="js/vendorsInlineIntegration.js"></script>
+  <script type="module" src="js/seedVendors.js"></script>
+  <script type="module" src="js/pendenciasUI.js"></script>
+  <script type="module" src="js/pages/processosPageEntry.js"></script>
+  <script>
+    window.__APP_BUILD__ = '2026-04-24.18-40-27';
+  </script>
+  <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+</body>
+</html>
+

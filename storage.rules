@@ -1,0 +1,212 @@
+rules_version = '2';
+
+// ============================================================================
+// Firebase Storage Rules - Gestor de Contratos
+// Data: 06/12/2025 (Atualizado)
+// 
+// Regras de segurança para anexos WhatsApp e outros arquivos
+// Atualizado para usar sistema de permissões user_permissions
+// ============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ========== FUNÇÕES AUXILIARES ==========
+    
+    // Verifica se usuário é admin
+    function isAdmin() {
+      return request.auth != null &&
+             (request.auth.token.admin == true ||
+              firestore.exists(/databases/(default)/documents/user_permissions/$(request.auth.uid)) &&
+              (firestore.get(/databases/(default)/documents/user_permissions/$(request.auth.uid)).data.role == 'super_admin' ||
+               firestore.get(/databases/(default)/documents/user_permissions/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    // Verifica se o usuário autenticado participa do chat interno
+    function isAnalystChatParticipant(chatId) {
+      return request.auth != null
+             && firestore.exists(/databases/(default)/documents/analystChats/$(chatId))
+             && request.auth.uid in firestore.get(/databases/(default)/documents/analystChats/$(chatId)).data.participants;
+    }
+    
+    // ========== ÁUDIOS CONVERTIDOS (OGG) ==========
+    // Pasta: whatsapp-media/{filename}
+    // Esses arquivos são convertidos server-side e enviados ao WhatsApp
+    // Precisam ser públicos temporariamente para a API do WhatsApp acessar
+    match /whatsapp-media/{filename} {
+      // LEITURA: Público (WhatsApp API precisa acessar)
+      allow read: if true;
+      
+      // CRIAÇÃO: Apenas Cloud Functions
+      allow create: if false;  // Apenas Functions podem criar
+      
+      // EXCLUSÃO: Apenas admin ou após 7 dias
+      allow delete: if isAdmin();
+    }
+    
+    // ========== ANEXOS WHATSAPP ==========
+    // Pasta: whatsapp/{chatId}/{filename}
+    match /whatsapp/{chatId}/{filename} {
+      
+      // LEITURA: Permitir para usuários autenticados
+      allow read: if request.auth != null;
+      
+      // CRIAÇÃO: Apenas usuários autenticados podem fazer upload
+      // SIMPLIFICADO: Removida verificação de email_verified
+      allow create: if request.auth != null
+                    && request.resource.size <= 100 * 1024 * 1024  // Máximo 100MB
+                    && (
+                      // Imagens (até 5MB)
+                      (request.resource.contentType.matches('image/.*') 
+                       && request.resource.size <= 5 * 1024 * 1024)
+                      ||
+                      // Documentos (até 100MB)
+                      (request.resource.contentType.matches('application/(pdf|msword|vnd.openxmlformats.*|vnd.ms-.*)')
+                       && request.resource.size <= 100 * 1024 * 1024)
+                      ||
+                      // Áudio (até 16MB)
+                      (request.resource.contentType.matches('audio/.*')
+                       && request.resource.size <= 16 * 1024 * 1024)
+                      ||
+                      // Vídeo (até 16MB)
+                      (request.resource.contentType.matches('video/.*')
+                       && request.resource.size <= 16 * 1024 * 1024)
+                      ||
+                      // Texto (até 10MB)
+                      (request.resource.contentType.matches('text/.*')
+                       && request.resource.size <= 10 * 1024 * 1024)
+                    );
+      
+      // ATUALIZAÇÃO: Não permitir (anexos são imutáveis)
+      allow update: if false;
+      
+      // EXCLUSÃO: Apenas o usuário que fez upload ou admin
+      allow delete: if request.auth != null
+                    && (resource.metadata.uploadedBy == request.auth.uid || isAdmin());
+    }
+    
+    // ========== AVATARES DE PERFIL ==========
+    // Pasta: avatars/{userId}
+    match /avatars/{userId} {
+      
+      // LEITURA: Todos podem ver avatares
+      allow read: if true;
+      
+      // CRIAÇÃO/ATUALIZAÇÃO: Apenas o próprio usuário ou admin
+      allow write: if request.auth != null
+           && (request.auth.uid == userId || isAdmin())
+                   && request.resource.contentType.matches('image/.*')
+                   && request.resource.size <= 1 * 1024 * 1024;  // Máximo 1MB
+      
+      // EXCLUSÃO: Apenas o próprio usuário ou admin
+      allow delete: if request.auth != null
+          && (request.auth.uid == userId || isAdmin());
+    }
+    
+    // ========== ARQUIVOS DE USUÁRIO (AVATAR E DOCUMENTOS) ==========
+    // Pasta: users/{userId}/{filename}
+    match /users/{userId}/{filename} {
+      
+      // LEITURA: Todos podem ver (para avatares públicos)
+      allow read: if true;
+      
+      // CRIAÇÃO/ATUALIZAÇÃO: Apenas o próprio usuário ou admin
+      allow write: if request.auth != null
+           && (request.auth.uid == userId || isAdmin())
+                   && request.resource.contentType.matches('image/.*')
+                   && request.resource.size <= 1 * 1024 * 1024;  // Máximo 1MB para avatares
+      
+      // EXCLUSÃO: Apenas o próprio usuário ou admin
+      allow delete: if request.auth != null
+          && (request.auth.uid == userId || isAdmin());
+    }
+    
+    // ========== ANEXOS DE CONTRATOS ==========
+    // Pasta: contracts/{contractId}/{filename}
+    match /contracts/{contractId}/{filename} {
+      
+      // LEITURA: Usuários autenticados podem acessar
+      allow read: if request.auth != null;
+      
+      // CRIAÇÃO/ATUALIZAÇÃO: Usuários autenticados
+      allow write: if request.auth != null
+                   && request.resource.size <= 50 * 1024 * 1024;  // Máximo 50MB
+      
+      // EXCLUSÃO: Apenas admin
+      allow delete: if isAdmin();
+    }
+    
+    match /contracts/{contractId}/{filename} {
+      
+      // LEITURA: Usuários autenticados
+      allow read: if request.auth != null;
+      
+      // CRIAÇÃO: Usuários autenticados com limite de tamanho e tipos permitidos
+      allow create: if request.auth != null
+                    && request.resource.size <= 50 * 1024 * 1024  // Máximo 50MB
+                    && (
+                      request.resource.contentType.matches('image/.*')
+                      || request.resource.contentType.matches('application/pdf')
+                      || request.resource.contentType.matches('application/.*word.*')
+                      || request.resource.contentType.matches('application/.*excel.*')
+                      || request.resource.contentType.matches('application/.*spreadsheet.*')
+                      || request.resource.contentType.matches('text/csv')
+                      || request.resource.contentType.matches('text/plain')
+                    );
+      
+      // EXCLUSÃO: Qualquer usuário autenticado pode excluir seus próprios anexos, admin pode excluir todos
+      allow delete: if request.auth != null;
+    }
+
+    // ========== ARQUIVOS DE AUDITORIA ==========
+    // Pasta: activity-audit/{module}/{year}/{month}/{filename}
+    match /activity-audit/{module}/{year}/{month}/{filename} {
+      allow read: if isAdmin()
+                   || (request.auth != null && resource.metadata.uploadedBy == request.auth.uid);
+
+      allow create: if request.auth != null
+                    && request.resource.size <= 50 * 1024 * 1024
+                    && request.resource.metadata.uploadedBy == request.auth.uid;
+
+      allow update: if false;
+
+      allow delete: if isAdmin();
+    }
+
+        // ========== ANEXOS DO CHAT INTERNO ==========
+    // Pasta: analystChat/{chatId}/{filename}
+    match /analystChat/{chatId}/{filename} {
+
+      // LEITURA: apenas participantes do chat (ou admin)
+      allow read: if isAnalystChatParticipant(chatId) || isAdmin();
+
+      // CRIACAO: participante do chat + limite de tamanho/tipo + metadata de autoria
+      allow create: if isAnalystChatParticipant(chatId)
+                    && request.resource.size <= 25 * 1024 * 1024  // Maximo 25MB
+                    && (
+                      request.resource.contentType.matches('image/.*')
+                      || request.resource.contentType.matches('application/pdf')
+                      || request.resource.contentType.matches('application/.*word.*')
+                      || request.resource.contentType.matches('application/.*excel.*')
+                      || request.resource.contentType.matches('application/.*spreadsheet.*')
+                      || request.resource.contentType.matches('text/.*')
+                      || request.resource.contentType.matches('audio/.*')
+                      || request.resource.contentType.matches('video/.*')
+                    )
+                    && request.resource.metadata.uploadedBy == request.auth.uid;
+
+      // ATUALIZACAO: Nao permitir (anexos sao imutaveis)
+      allow update: if false;
+
+      // EXCLUSAO: admin ou autor do upload (se ainda for participante)
+      allow delete: if isAdmin()
+                    || (isAnalystChatParticipant(chatId)
+                        && resource.metadata.uploadedBy == request.auth.uid);
+    }
+        // ========== REGRA PADRÃO ==========
+    // Negar tudo que não foi explicitamente permitido
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

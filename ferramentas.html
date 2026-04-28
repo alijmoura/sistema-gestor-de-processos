@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ferramentas - Sistema Gestor de Processos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/modal-standard.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/themeInit.js" defer></script>
+</head>
+<body>
+  <div id="sidebar-shell-mount"></div>
+  <script src="js/sidebarShell.js"></script>
+  <script>
+    window.SidebarShell.render({
+      mountId: 'sidebar-shell-mount',
+      mode: 'standalone',
+      activePage: 'ferramentas'
+    });
+  </script>
+
+  <main id="main-content">
+    <div id="page-ferramentas" class="page page-main-full active">
+      <section class="tools-hero card border-0 shadow-sm mb-4 overflow-hidden">
+        <div class="card-body p-4 p-xl-5">
+          <div class="row g-4 align-items-center">
+            <div class="col-12 col-xl-7">
+              <span class="badge rounded-pill text-bg-light border border-primary-subtle text-primary-emphasis mb-3">Bancada de documentos</span>
+              <h2 class="mb-2">PDF sem sair do navegador</h2>
+              <p class="text-muted mb-4">
+                Central PDF do Gestor de Processos:
+                montar, dividir, desbloquear e converter PDFs em imagens com processamento local.
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" href="#categoria-organizar">
+                  <i class="bi bi-grid me-1"></i>Montagem de PDF
+                </a>
+                <a class="btn btn-outline-primary" href="#categoria-converter">
+                  <i class="bi bi-arrow-left-right me-1"></i>Conversão de PDF
+                </a>
+              </div>
+            </div>
+
+            <div class="col-12 col-xl-5">
+              <div class="tools-hero-panel">
+                <div class="tools-metric-grid">
+                  <div class="tools-metric-card">
+                    <span class="tools-metric-value">4</span>
+                    <span class="tools-metric-label">ferramentas locais</span>
+                  </div>
+                  <div class="tools-metric-card">
+                    <span class="tools-metric-value">0</span>
+                    <span class="tools-metric-label">upload externo</span>
+                  </div>
+                  <div class="tools-metric-card">
+                    <span class="tools-metric-value">PDF</span>
+                    <span class="tools-metric-label">montagem e distribuição</span>
+                  </div>
+                  <div class="tools-metric-card">
+                    <span class="tools-metric-value">ZIP</span>
+                    <span class="tools-metric-label">saída por página ou imagem</span>
+                  </div>
+                </div>
+
+                <div class="tools-hero-checklist">
+                  <div class="tools-hero-check">
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Processamento local no navegador</span>
+                  </div>
+                  <div class="tools-hero-check">
+                    <i class="bi bi-arrows-move"></i>
+                    <span>Edição por página na bancada principal</span>
+                  </div>
+                  <div class="tools-hero-check">
+                    <i class="bi bi-file-earmark-zip"></i>
+                    <span>Saidas em PDF e ZIP</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <nav class="tools-section-nav d-flex flex-wrap gap-2 mb-4" aria-label="Categorias de ferramentas">
+        <a class="btn btn-sm btn-light border tools-nav-chip" href="#categoria-organizar">
+          <i class="bi bi-stack me-1"></i>Montagem
+        </a>
+        <a class="btn btn-sm btn-light border tools-nav-chip" href="#categoria-converter">
+          <i class="bi bi-stars me-1"></i>Conversão
+        </a>
+      </nav>
+
+      <section id="categoria-organizar" class="tools-category mb-5">
+        <div class="tools-category-header mb-3">
+          <span class="tools-category-kicker">Montagem de PDF</span>
+          <h3 class="h4 mb-1">Juntar, reorganizar e rotacionar páginas em um único editor</h3>
+          <p class="text-muted mb-0">A bancada principal concentra a montagem completa do PDF final: vários arquivos de entrada, páginas combinadas, reordenação, remoção e rotação por página.</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xxl-8">
+            <section class="card shadow-sm h-100 tools-card">
+              <div class="card-header bg-body-tertiary d-flex align-items-center justify-content-between gap-2">
+                <h5 class="mb-0"><i class="bi bi-stack text-danger me-2"></i>Montar PDF</h5>
+                <span class="badge text-bg-success">Atualizado</span>
+              </div>
+              <div class="card-body">
+                <p class="text-muted mb-3">Adicione um ou mais PDFs e edite a ordem final das páginas em um único fluxo. Cada página pode ser movida, removida ou rotacionada antes da geração do documento.</p>
+
+                <div class="mb-3">
+                  <label for="pdf-workspace-input" class="form-label">Arquivos PDF</label>
+                  <input class="form-control" type="file" id="pdf-workspace-input" accept="application/pdf" multiple />
+                  <div class="form-text">Os arquivos são processados localmente no navegador e cada página vira um item editável na bancada.</div>
+                </div>
+
+                <div id="pdf-workspace-dropzone" class="tool-dropzone border border-2 border-secondary rounded-3 bg-body-tertiary p-3 shadow-sm">
+                  <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                    <i class="bi bi-upload"></i>
+                    <span>Arraste e solte PDFs aqui para carregar as páginas que vão compor o documento final.</span>
+                  </div>
+                  <p id="pdf-workspace-empty" class="text-muted mb-0">Adicione PDFs para montar o documento final.</p>
+                  <ul id="pdf-workspace-list" class="list-group list-group-flush"></ul>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                  <button id="pdf-workspace-button" class="btn btn-primary" type="button" disabled>
+                    <i class="bi bi-file-earmark-check me-1"></i>Gerar PDF final
+                  </button>
+                  <button id="pdf-workspace-clear" class="btn btn-outline-secondary" type="button" disabled>
+                    Limpar bancada
+                  </button>
+                </div>
+
+                <div id="pdf-workspace-status" class="small text-muted mt-2 tool-status" role="status" aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-12 col-xxl-4">
+            <section class="card shadow-sm h-100 tools-card">
+              <div class="card-header bg-body-tertiary d-flex align-items-center justify-content-between gap-2">
+                <h5 class="mb-0"><i class="bi bi-scissors text-primary me-2"></i>Dividir PDF</h5>
+                <span class="badge text-bg-success">Novo</span>
+              </div>
+              <div class="card-body">
+                <p class="text-muted mb-3">Extraia um intervalo específico em um novo PDF ou gere um arquivo por página em ZIP.</p>
+
+                <div class="mb-3">
+                  <label for="pdf-split-input" class="form-label">Arquivo PDF</label>
+                  <input class="form-control" type="file" id="pdf-split-input" accept="application/pdf" />
+                </div>
+
+                <div id="pdf-split-dropzone" class="tool-dropzone border border-2 border-secondary rounded-3 bg-body-tertiary p-3 mb-3 shadow-sm">
+                  <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                    <i class="bi bi-upload"></i>
+                    <span>Arraste e solte um PDF aqui para dividir.</span>
+                  </div>
+                  <p id="pdf-split-selected" class="text-muted mb-0">Nenhum arquivo selecionado.</p>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label for="pdf-split-mode" class="form-label">Modo de saída</label>
+                    <select id="pdf-split-mode" class="form-select">
+                      <option value="range" selected>Extrair páginas para um PDF</option>
+                      <option value="individual">Uma página por arquivo (ZIP)</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label for="pdf-split-range" class="form-label">Páginas ou intervalos</label>
+                    <input type="text" id="pdf-split-range" class="form-control" placeholder="Ex.: 1-3, 5, 8-10" />
+                    <div id="pdf-split-range-help" class="form-text">Informe quais páginas deseja extrair.</div>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                  <button id="pdf-split-button" class="btn btn-primary" type="button" disabled>
+                    <i class="bi bi-download me-1"></i>Gerar arquivos
+                  </button>
+                  <button id="pdf-split-clear" class="btn btn-outline-secondary" type="button" disabled>
+                    Limpar seleção
+                  </button>
+                </div>
+
+                <div id="pdf-split-status" class="small text-muted mt-2 tool-status" role="status" aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section id="categoria-converter" class="tools-category mb-5">
+        <div class="tools-category-header mb-3">
+          <span class="tools-category-kicker">Conversão de PDF</span>
+          <h3 class="h4 mb-1">Saidas em imagem e PDF desbloqueado</h3>
+          <p class="text-muted mb-0">Ferramentas voltadas para distribuição rápida do arquivo final e contorno de restrições de edição.</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xl-6">
+            <section class="card shadow-sm h-100 tools-card">
+              <div class="card-header bg-body-tertiary d-flex align-items-center justify-content-between gap-2">
+                <h5 class="mb-0"><i class="bi bi-unlock text-success me-2"></i>Desbloquear PDF</h5>
+                <span class="badge text-bg-primary">Disponível</span>
+              </div>
+              <div class="card-body">
+                <p class="text-muted mb-3">Gere uma cópia desbloqueada para PDFs com restrições de edição.</p>
+
+                <div class="mb-3">
+                  <label for="pdf-unlock-input" class="form-label">Arquivo PDF</label>
+                  <input class="form-control" type="file" id="pdf-unlock-input" accept="application/pdf" />
+                </div>
+
+                <div id="pdf-unlock-dropzone" class="tool-dropzone border border-2 border-secondary rounded-3 bg-body-tertiary p-3 mb-3 shadow-sm">
+                  <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                    <i class="bi bi-upload"></i>
+                    <span>Arraste e solte um PDF aqui para desbloquear.</span>
+                  </div>
+                  <p id="pdf-unlock-selected" class="text-muted mb-0">Nenhum arquivo selecionado.</p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                  <button id="pdf-unlock-button" class="btn btn-primary" type="button" disabled>
+                    <i class="bi bi-unlock-fill me-1"></i>Desbloquear PDF
+                  </button>
+                </div>
+                <div id="pdf-unlock-status" class="small text-muted mt-2 tool-status" role="status" aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-12 col-xl-6">
+            <section class="card shadow-sm h-100 tools-card">
+              <div class="card-header bg-body-tertiary d-flex align-items-center justify-content-between gap-2">
+                <h5 class="mb-0"><i class="bi bi-filetype-jpg text-warning me-2"></i>PDF para JPG</h5>
+                <span class="badge text-bg-primary">Disponível</span>
+              </div>
+              <div class="card-body">
+                <p class="text-muted mb-3">Converta as páginas do PDF em imagens JPG e baixe tudo em um arquivo ZIP.</p>
+
+                <div class="mb-3">
+                  <label for="pdf-to-jpg-input" class="form-label">Arquivo PDF</label>
+                  <input class="form-control" type="file" id="pdf-to-jpg-input" accept="application/pdf" />
+                </div>
+
+                <div id="pdf-to-jpg-dropzone" class="tool-dropzone border border-2 border-secondary rounded-3 bg-body-tertiary p-3 mb-3 shadow-sm">
+                  <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                    <i class="bi bi-upload"></i>
+                    <span>Arraste e solte um PDF aqui para converter.</span>
+                  </div>
+                  <p id="pdf-to-jpg-selected" class="text-muted mb-0">Nenhum arquivo selecionado.</p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                  <button id="pdf-to-jpg-button" class="btn btn-primary" type="button" disabled>
+                    <i class="bi bi-file-earmark-zip me-1"></i>Converter para JPG (ZIP)
+                  </button>
+                </div>
+                <div id="pdf-to-jpg-status" class="small text-muted mt-2 tool-status" role="status" aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="notification" class="notification"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="js/pdfjsInit.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-check-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="js/debug.js" defer></script>
+  <script src="js/standaloneSidebar.js" defer></script>
+  <script type="module" src="js/pages/toolsPageInit.js"></script>
+  <script type="module" src="js/pages/toolsPageEntry.js"></script>
+  <script>
+    window.__APP_BUILD__ = '2026-04-24.18-40-27';
+  </script>
+  <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+</body>
+</html>
+

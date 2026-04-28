@@ -1,0 +1,48 @@
+{
+  "name": "sistema-gestor-de-processos",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "lint": "eslint js/*.js",
+    "lint:fix": "eslint js/*.js --fix",
+    "serve": "firebase serve",
+    "deploy": "firebase deploy",
+    "bump:build": "node scripts/bump-app-build.js",
+    "bump:build:dry": "node scripts/bump-app-build.js --dry-run",
+    "release:verify": "node scripts/verify-release.js",
+    "release:prepare": "node scripts/release.js prepare",
+    "release:prepare:dry": "node scripts/release.js prepare --dry-run",
+    "release:deploy": "node scripts/release.js deploy",
+    "release:deploy:hosting": "node scripts/release.js deploy --target=hosting",
+    "release:deploy:backend": "node scripts/release.js deploy --target=backend",
+    "release:rebuild:aprovacoes": "node scripts/rebuild-aprovacao-aggregates.js",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:hosting:fresh": "npm run release:deploy:hosting",
+    "deploy:functions": "firebase deploy --only functions",
+    "build": "npm run build:css",
+    "build:css": "npm run build:css:style && npm run build:css:all",
+    "build:css:style": "postcss css/style.css -o css/style.min.css",
+    "build:css:all": "postcss css/login.css -o css/login.min.css && postcss css/whatsapp-advanced.css -o css/whatsapp-advanced.min.css && postcss css/whatsapp-autocomplete.css -o css/whatsapp-autocomplete.min.css && postcss css/ai-chat.css -o css/ai-chat.min.css",
+    "watch:css": "postcss css/style.css -o css/style.min.css --watch",
+    "test": "echo 'Tests not configured yet'",
+    "start": "firebase serve --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "autoprefixer": "^10.4.22",
+    "cssnano": "^7.1.2",
+    "eslint": "^10.0.2",
+    "firebase": "^12.7.0",
+    "globals": "^16.4.0",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1"
+  },
+  "dependencies": {
+    "playwright": "^1.57.0",
+    "whatsapp": "^0.0.5-Alpha"
+  }
+}
+

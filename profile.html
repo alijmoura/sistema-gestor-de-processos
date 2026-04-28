@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil - Sistema Gestor de Processos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/modal-standard.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/profile.css" />
+  
+  <!-- Theme (light/dark) -->
+  <script src="js/themeInit.js" defer></script>
+</head>
+<body>
+  <div id="sidebar-shell-mount"></div>
+  <script src="js/sidebarShell.js"></script>
+  <script>
+    window.SidebarShell.render({
+      mountId: 'sidebar-shell-mount',
+      mode: 'standalone',
+      activePage: 'perfil'
+    });
+  </script>
+
+  <main id="main-content">
+    <div id="page-perfil" class="page page-main-full active">
+      <div id="profile-live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+      <div class="profile-container">
+        <div class="profile-card profile-header-card">
+          <div class="profile-header-content">
+            <div class="avatar-upload-container mb-3">
+              <div class="avatar-upload-zone" id="avatar-dropzone" role="button" tabindex="0" aria-label="Clique ou arraste uma imagem para alterar sua foto de perfil" aria-describedby="avatar-instructions">
+                <div class="avatar-preview-wrapper">
+                  <img id="profile-avatar" src="images/logologin.png" alt="Foto de perfil" class="avatar-img-enhanced" />
+                  <div class="avatar-overlay">
+                    <i class="bi bi-camera-fill"></i>
+                    <span>Alterar foto</span>
+                  </div>
+                  <div class="avatar-upload-progress d-none" id="avatar-upload-progress">
+                    <svg viewBox="0 0 36 36" class="circular-progress">
+                      <circle class="circle-bg" cx="18" cy="18" r="16"></circle>
+                      <circle class="circle-progress" cx="18" cy="18" r="16"></circle>
+                    </svg>
+                    <span class="progress-text">0%</span>
+                  </div>
+                  <div class="avatar-drag-indicator d-none" id="avatar-drag-indicator">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span>Solte aqui</span>
+                  </div>
+                </div>
+                <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="input-hidden" />
+              </div>
+              <div class="avatar-actions-bar mt-2">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="avatar-change-btn">
+                  <i class="bi bi-upload me-1"></i>Escolher arquivo
+                </button>
+                <button type="button" class="btn btn-primary btn-sm d-none" id="avatar-save-btn">
+                  <i class="bi bi-check-lg me-1"></i>Salvar foto
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm d-none" id="avatar-remove-btn">
+                  <i class="bi bi-trash me-1"></i>Remover
+                </button>
+              </div>
+              <div class="avatar-feedback mt-2">
+                <small class="text-muted" id="avatar-instructions">JPG, PNG ou WebP. Máximo 1MB.</small>
+                <div id="avatar-error" class="text-danger small d-none"></div>
+                <div id="avatar-success" class="text-success small d-none"></div>
+              </div>
+            </div>
+
+            <h3 class="profile-display-name mb-1" id="profile-display-name">Carregando...</h3>
+            <p class="profile-display-email mb-0" id="profile-display-email">--</p>
+            <div class="profile-roles mt-2 d-flex flex-wrap justify-content-center gap-2" id="profile-claims-badges"></div>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="profile-grid-column">
+            <div class="profile-card" id="card-personal-info">
+              <div class="profile-card-header">
+                <h4><i class="bi bi-person text-primary"></i> Informações pessoais</h4>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="toggle-edit-personal" aria-expanded="false" aria-label="Editar informações pessoais">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+              <div class="profile-card-body">
+                <div class="profile-view-mode" id="personal-view-mode">
+                  <div class="profile-info-row">
+                    <span class="profile-info-label">Nome Completo</span>
+                    <span class="profile-info-value" id="view-fullname">-</span>
+                  </div>
+                  <div class="profile-info-row">
+                    <span class="profile-info-label">Nome Reduzido</span>
+                    <span class="profile-info-value" id="view-shortname">-</span>
+                  </div>
+                  <div class="profile-info-row">
+                    <span class="profile-info-label">CPF</span>
+                    <span class="profile-info-value" id="view-cpf">-</span>
+                  </div>
+                  <div class="profile-info-row">
+                    <span class="profile-info-label">E-mail</span>
+                    <span class="profile-info-value" id="view-email">-</span>
+                  </div>
+                </div>
+
+                <div class="profile-edit-mode d-none" id="personal-edit-mode">
+                  <form id="profile-form">
+                    <div class="mb-3">
+                      <label for="profile-fullname" class="form-label">Nome Completo</label>
+                      <input type="text" id="profile-fullname" class="form-control" required placeholder="Digite seu nome completo" />
+                    </div>
+                    <div class="mb-3">
+                      <label for="profile-shortname" class="form-label">
+                        Nome Reduzido
+                        <i class="bi bi-info-circle text-muted" data-bs-toggle="tooltip" title="Nome usado no WhatsApp (ex: João Silva)"></i>
+                      </label>
+                      <input type="text" id="profile-shortname" class="form-control" placeholder="Ex: João Silva" />
+                      <div class="form-text small">Como você quer se apresentar no WhatsApp</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="profile-cpf" class="form-label">CPF</label>
+                      <input type="text" id="profile-cpf" class="form-control" placeholder="000.000.000-00" maxlength="14" />
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">E-mail</label>
+                      <input type="email" id="profile-email" class="form-control" readonly disabled />
+                      <div class="form-text small">O e-mail não pode ser alterado.</div>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                      <button type="submit" class="btn btn-primary" id="profile-save-btn">
+                        <i class="bi bi-check-lg me-1"></i>Salvar
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary" id="cancel-edit-personal">
+                        Cancelar
+                      </button>
+                    </div>
+                    <div id="profile-save-status" class="small-note mt-2"></div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h4><i class="bi bi-sliders text-primary"></i> Preferências</h4>
+              </div>
+              <div class="profile-card-body">
+                <div id="workflow-preferences-container" class="pref-section d-none">
+                  <h6 class="pref-section-title">Workflow</h6>
+                  <div class="pref-row">
+                    <div>
+                      <strong>Workflow Padrão</strong><br/>
+                      <span class="small-note">Tipo de processo selecionado por padrão.</span>
+                    </div>
+                    <select class="form-select form-select-sm w-auto max-w-input-sm" id="pref-default-workflow">
+                      <option value="individual">Individual</option>
+                      <option value="associativo">Associativo</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="pref-section">
+                  <h6 class="pref-section-title">Aparência</h6>
+                  <div class="pref-row">
+                    <div>
+                      <strong>Modo Escuro</strong><br/>
+                      <span class="small-note">Alternar entre tema claro e escuro.</span>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="pref-dark" role="switch">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pref-section">
+                  <h6 class="pref-section-title">Notificações</h6>
+                  <div class="pref-row">
+                    <div>
+                      <strong>Notificações Sonoras</strong><br/>
+                      <span class="small-note">Reproduzir som ao receber notificação.</span>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="pref-sound">
+                    </div>
+                  </div>
+                  <div class="pref-row">
+                    <div>
+                      <strong>Notificações Desktop</strong><br/>
+                      <span class="small-note">Mostrar alertas do sistema.</span>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="pref-desktop-notification">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button id="save-preferences-btn" class="btn btn-primary btn-sm">
+                    <i class="bi bi-save me-1"></i>Salvar Preferências
+                  </button>
+                  <span id="preferences-status" class="small-note ms-2"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-grid-column">
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h4><i class="bi bi-shield-lock text-primary"></i> Segurança</h4>
+              </div>
+              <div class="profile-card-body">
+                <form id="password-change-form">
+                  <div class="mb-3">
+                    <label for="profile-new-password" class="form-label">Nova Senha</label>
+                    <div class="input-group">
+                      <input type="password" id="profile-new-password" class="form-control" minlength="6" required placeholder="Mínimo 6 caracteres" />
+                      <button class="btn btn-outline-secondary password-toggle-btn" type="button" id="toggle-password-visibility" aria-label="Mostrar senha" aria-pressed="false">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                    <div class="password-strength mt-2" id="password-strength">
+                      <div class="password-strength-bar">
+                        <div class="password-strength-fill" id="password-strength-fill"></div>
+                      </div>
+                      <small class="password-strength-text" id="password-strength-text"></small>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="profile-new-password-confirm" class="form-label">Confirmar Nova Senha</label>
+                    <input type="password" id="profile-new-password-confirm" class="form-control" minlength="6" required />
+                    <div class="form-text" id="password-match"></div>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-warning">
+                      <i class="bi bi-key me-1"></i>Alterar Senha
+                    </button>
+                    <button type="button" id="send-reset-email-btn" class="btn btn-outline-secondary">
+                      <i class="bi bi-envelope-at me-1"></i>E-mail de Reset
+                    </button>
+                  </div>
+                  <div id="password-status" class="small-note mt-2"></div>
+                </form>
+
+                <div class="section-divider"></div>
+
+                <div class="pref-row">
+                  <div>
+                    <strong>Modo Debug</strong><br/>
+                    <span class="small-note">Ativar logs detalhados no console.</span>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="debug-mode-toggle">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h4><i class="bi bi-shield-check text-primary"></i> Acesso</h4>
+              </div>
+              <div class="profile-card-body">
+                <p class="small-note mb-3">Claims e permissões personalizadas associadas ao seu usuário.</p>
+                <div id="profile-claims" class="claims-grid d-flex flex-wrap gap-2"></div>
+                <div class="mt-3">
+                  <button type="button" id="refresh-claims-btn" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-repeat me-1"></i>Atualizar Claims
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h4><i class="bi bi-whatsapp text-success"></i> WhatsApp - Agente</h4>
+              </div>
+              <div class="profile-card-body">
+                <div id="whatsapp-agent-register-section">
+                  <p class="text-muted mb-3">Registre-se como agente para atender conversas do WhatsApp.</p>
+                  <form id="whatsapp-agent-form">
+                    <div class="mb-3">
+                      <label for="whatsapp-agent-department" class="form-label">Departamento</label>
+                      <select id="whatsapp-agent-department" class="form-select" required>
+                        <option value="">Selecione seu departamento</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                      <i class="bi bi-person-check me-1"></i>Registrar como Agente
+                    </button>
+                    <div id="whatsapp-agent-register-status" class="small-note mt-2"></div>
+                  </form>
+                </div>
+
+                <div id="whatsapp-agent-info-section" class="d-none">
+                  <div class="alert alert-success mb-3">
+                    <strong><i class="bi bi-check-circle-fill me-2"></i>Você está registrado como agente</strong>
+                    <hr class="my-2">
+                    <div class="row g-2">
+                      <div class="col-4">
+                        <small class="text-muted d-block">Departamento</small>
+                        <span id="whatsapp-agent-current-department" class="fw-semibold">--</span>
+                      </div>
+                      <div class="col-4">
+                        <small class="text-muted d-block">Status</small>
+                        <span id="whatsapp-agent-current-status" class="badge bg-secondary">--</span>
+                      </div>
+                      <div class="col-4">
+                        <small class="text-muted d-block">Conversas</small>
+                        <span id="whatsapp-agent-active-chats" class="fw-semibold">0</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button type="button" class="btn btn-outline-success btn-sm" id="whatsapp-agent-change-dept-btn">
+                      <i class="bi bi-arrow-left-right me-1"></i>Alterar Departamento
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="notification" class="notification"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="js/standaloneSidebar.js" defer></script>
+  <!-- Firebase Compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+  <!-- Scripts principais reutilizados -->
+  <script>
+    window.__APP_BUILD__ = '2026-04-24.18-40-27';
+  </script>
+  <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/firestoreService.js"></script>
+  <script type="module" src="js/profile.js"></script>
+</body>
+</html>
+
+

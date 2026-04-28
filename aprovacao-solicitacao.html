@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitação de Aprovação de Crédito</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/aprovacao-solicitacao.css">
+</head>
+<body class="aprovacao-intake-page">
+  <main class="intake-shell">
+    <section class="intake-hero p-4 p-lg-5 mb-4">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div>
+          <p class="text-uppercase small fw-semibold text-primary mb-2">Sistema Gestor de Processos</p>
+          <h1 class="intake-hero-title mb-2">Solicitação de Aprovação de Crédito Habitacional</h1>
+          <p class="intake-muted mb-0">Preencha os dados e anexe os documentos para triagem do setor de Aprovação.</p>
+        </div>
+        <div class="text-lg-end">
+          <div id="intake-token-status" class="mb-2"></div>
+          <small class="intake-muted">Canal seguro para envio de documentação.</small>
+        </div>
+      </div>
+      <div class="intake-step-list mt-4">
+        <article class="intake-step-item">
+          <strong>1</strong>
+          <span class="small">Informe dados de contato e perfil do solicitante.</span>
+        </article>
+        <article class="intake-step-item">
+          <strong>2</strong>
+          <span class="small">Anexe a documentação para análise de crédito.</span>
+        </article>
+        <article class="intake-step-item">
+          <strong>3</strong>
+          <span class="small">Nossa equipe retorna o parecer via WhatsApp, e-mail ou telefone.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="intake-card card">
+      <div class="card-header px-4 py-3">
+        <h2 class="h6 mb-1 d-flex align-items-center gap-2">
+          <i class="bi bi-file-earmark-lock2"></i>
+          Dados da Solicitação
+        </h2>
+        <p class="small intake-muted mb-0">Campos com <span class="intake-required">*</span> são obrigatórios.</p>
+      </div>
+      <div class="card-body p-4">
+        <div id="intake-success-box" class="intake-success d-none mb-3">
+          <strong>Solicitação recebida.</strong>
+          <div id="intake-success-text" class="small mt-1"></div>
+        </div>
+        <div id="intake-error-box" class="intake-error d-none mb-3">
+          <strong>Não foi possível concluir.</strong>
+          <div id="intake-error-text" class="small mt-1"></div>
+        </div>
+
+        <form id="aprovacao-intake-form" class="needs-validation d-none" novalidate>
+          <div class="row g-3">
+            <div class="col-lg-7">
+              <label for="intake-nome" class="form-label">Nome completo <span class="intake-required">*</span></label>
+              <input type="text" class="form-control" id="intake-nome" name="nome" minlength="5" maxlength="160" required>
+              <div class="invalid-feedback">Informe o nome completo.</div>
+            </div>
+            <div class="col-lg-5">
+              <label for="intake-cpf" class="form-label">CPF <span class="intake-required">*</span></label>
+              <input type="text" class="form-control" id="intake-cpf" name="cpf" inputmode="numeric" minlength="11" maxlength="14" required>
+              <div class="invalid-feedback">Informe um CPF válido.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="intake-email" class="form-label">E-mail</label>
+              <input type="email" class="form-control" id="intake-email" name="email" maxlength="160">
+              <div class="invalid-feedback">Informe um e-mail válido.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="intake-telefone" class="form-label">WhatsApp / Telefone <span class="intake-required">*</span></label>
+              <input type="tel" class="form-control" id="intake-telefone" name="telefone" inputmode="numeric" minlength="10" maxlength="16" required>
+              <div class="invalid-feedback">Informe um telefone para retorno.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="intake-renda" class="form-label">Renda mensal aproximada</label>
+              <input type="number" class="form-control" id="intake-renda" name="renda" min="0" step="0.01">
+              <div class="invalid-feedback">Informe um valor válido.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="intake-carta" class="form-label">Tipo de carta</label>
+              <select id="intake-carta" class="form-select" name="carta">
+                <option value="MCMV" selected>MCMV</option>
+                <option value="SBPE">SBPE</option>
+                <option value="SFI">SFI</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="intake-origem" class="form-label">Perfil do solicitante <span class="intake-required">*</span></label>
+              <select id="intake-origem" class="form-select" name="origem" required>
+                <option value="">Selecione...</option>
+                <option value="cliente">Cliente</option>
+                <option value="corretor">Corretor</option>
+                <option value="imobiliaria">Imobiliária</option>
+                <option value="outro">Outro</option>
+              </select>
+              <div class="invalid-feedback">Selecione o perfil de origem.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="intake-corretor" class="form-label">Corretor / Imobiliária</label>
+              <input type="text" class="form-control" id="intake-corretor" name="corretor" maxlength="120">
+            </div>
+            <div class="col-md-6">
+              <label for="intake-construtora" class="form-label">Construtora de interesse</label>
+              <input type="text" class="form-control" id="intake-construtora" name="construtora" maxlength="180">
+            </div>
+            <div class="col-12">
+              <label for="intake-empreendimento" class="form-label">Empreendimento de interesse</label>
+              <input type="text" class="form-control" id="intake-empreendimento" name="empreendimento" maxlength="180">
+            </div>
+            <div class="col-md-6">
+              <label for="intake-document-category" class="form-label">Categoria principal dos documentos</label>
+              <select id="intake-document-category" class="form-select" name="docCategory">
+                <option value="documentacao_basica" selected>Documentação básica</option>
+                <option value="renda">Comprovantes de renda</option>
+                <option value="imovel">Documentos do imóvel</option>
+                <option value="outros">Outros</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="intake-documentos" class="form-label">Anexos (até 8 arquivos)</label>
+              <input type="file" class="form-control" id="intake-documentos" name="documentos" accept=".pdf,.jpg,.jpeg,.png,.webp" multiple>
+              <div class="form-text">Formatos aceitos: PDF, JPG, PNG e WEBP. Limite: 8MB por arquivo e 18MB por envio.</div>
+            </div>
+            <div class="col-12">
+              <div id="intake-file-list"></div>
+            </div>
+            <div class="col-12">
+              <label for="intake-mensagem" class="form-label">Observações para análise</label>
+              <textarea id="intake-mensagem" class="form-control" name="mensagem" rows="4" maxlength="3000" placeholder="Ex.: condições especiais, composição de renda, documentação pendente."></textarea>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="intake-lgpd" required>
+                <label class="form-check-label" for="intake-lgpd">
+                  Declaro que autorizo o tratamento dos dados para análise de crédito habitacional, conforme LGPD. <span class="intake-required">*</span>
+                </label>
+                <div class="invalid-feedback">É necessário aceitar o termo LGPD para enviar.</div>
+              </div>
+            </div>
+            <div class="col-12 d-flex flex-column flex-sm-row gap-2 align-items-sm-center">
+              <button type="submit" class="btn btn-primary" id="intake-submit-btn">
+                <span id="intake-submit-spinner" class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                <span id="intake-submit-text">Enviar solicitação</span>
+              </button>
+              <small class="intake-muted">Após o envio, nosso time de Aprovação fará contato com o retorno da análise.</small>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    window.__APP_BUILD__ = '2026-04-24.18-40-27';
+  </script>
+  <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+  <script type="module" src="js/publicAprovacaoSolicitacao.js"></script>
+</body>
+</html>

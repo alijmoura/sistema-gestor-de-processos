@@ -1,0 +1,33 @@
+.workflow-card {
+  border-left: 4px solid var(--bs-primary);
+  transition: all 0.2s ease;
+}
+
+.workflow-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.workflow-card.inactive {
+  border-left-color: var(--gray-400);
+  opacity: 0.7;
+}
+
+.step-badge {
+  background: var(--gray-100);
+  color: var(--primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.priority-badge {
+  font-weight: bold;
+  padding: 0.35rem 0.75rem;
+}
+
+.workflow-actions {
+  display: flex;
+  gap: 0.5rem;
+}

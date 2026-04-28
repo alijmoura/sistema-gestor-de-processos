@@ -1,0 +1,118 @@
+:root {
+  --aprovacao-bg-start: #f7f1e4;
+  --aprovacao-bg-end: #dce8f2;
+  --aprovacao-surface: #fffdf8;
+  --aprovacao-ink: #1f2a37;
+  --aprovacao-muted: #4b5563;
+  --aprovacao-border: rgba(31, 42, 55, 0.14);
+  --aprovacao-accent: #0d6efd;
+  --aprovacao-accent-soft: rgba(13, 110, 253, 0.12);
+  --aprovacao-success: #157347;
+  --aprovacao-danger: #b02a37;
+}
+
+body.aprovacao-intake-page {
+  min-height: 100vh;
+  background: linear-gradient(145deg, var(--aprovacao-bg-start), var(--aprovacao-bg-end));
+  color: var(--aprovacao-ink);
+  font-family: "Sora", "Segoe UI", sans-serif;
+}
+
+.intake-shell {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.intake-hero {
+  border: 1px solid var(--aprovacao-border);
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at top right, var(--aprovacao-accent-soft), transparent 55%), var(--aprovacao-surface);
+  box-shadow: 0 16px 36px rgba(31, 42, 55, 0.08);
+}
+
+.intake-hero-title {
+  font-size: clamp(1.4rem, 2.7vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.intake-step-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.intake-step-item {
+  border: 1px solid var(--aprovacao-border);
+  background: #fff;
+  border-radius: 0.85rem;
+  padding: 0.75rem;
+}
+
+.intake-step-item strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 999px;
+  background: var(--aprovacao-accent-soft);
+  color: var(--aprovacao-accent);
+  font-size: 0.82rem;
+  margin-right: 0.35rem;
+}
+
+.intake-card {
+  border: 1px solid var(--aprovacao-border);
+  border-radius: 1rem;
+  background: var(--aprovacao-surface);
+  box-shadow: 0 12px 30px rgba(31, 42, 55, 0.06);
+}
+
+.intake-card .card-header {
+  border-bottom: 1px solid var(--aprovacao-border);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.intake-required {
+  color: var(--aprovacao-danger);
+}
+
+.intake-file-item {
+  border: 1px solid var(--aprovacao-border);
+  border-radius: 0.65rem;
+  background: #fff;
+  padding: 0.45rem 0.6rem;
+}
+
+.intake-success {
+  border: 1px solid rgba(21, 115, 71, 0.28);
+  background: rgba(21, 115, 71, 0.08);
+  color: #0f5132;
+  border-radius: 0.85rem;
+  padding: 0.9rem;
+}
+
+.intake-error {
+  border: 1px solid rgba(176, 42, 55, 0.34);
+  background: rgba(176, 42, 55, 0.08);
+  color: #842029;
+  border-radius: 0.85rem;
+  padding: 0.9rem;
+}
+
+.intake-muted {
+  color: var(--aprovacao-muted);
+}
+
+@media (max-width: 576px) {
+  .intake-shell {
+    padding: 1.25rem 0.75rem 2rem;
+  }
+
+  .intake-hero,
+  .intake-card {
+    border-radius: 0.9rem;
+  }
+}

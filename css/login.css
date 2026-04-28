@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap');
+
+/* Login usa variáveis do variables.css */
+:root {
+    --card-shadow: var(--shadow-xl); /* Padronizado */
+    --input-bg: var(--bg-surface);
+}
+
+.login-body {
+    font-family: var(--font-family-base);
+    background-color: var(--bg-body);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.login-container {
+    background-color: var(--bg-surface);
+    padding: 40px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--card-shadow);
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--border-color);
+}
+
+.login-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.login-card .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.logo {
+    display: block;
+    margin: 0 auto 20px auto;
+    max-width: 400px;
+    margin-bottom: 10px;
+}
+
+.login-logo {
+    max-height: 250px;
+}
+
+h2 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+    font-weight: var(--font-weight-bold);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    box-sizing: border-box;
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 57, 186, 0.2); /* Primary color with opacity */
+}
+
+.input-group-text {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.login-card button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    transition: background-color var(--transition-fast);
+}
+
+.login-card button[type="submit"]:hover {
+    background-color: var(--primary-hover);
+}
+
+.invalid-feedback {
+    font-size: 0.85rem;
+}
+
+#dark-mode-toggle {
+    display: none; /* Escondendo toggle de dark mode */
+}
+
+.error-message {
+    color: var(--danger);
+    text-align: center;
+    margin-top: 15px;
+    min-height: 20px;
+}

@@ -1,0 +1,149 @@
+:root {
+    --primary-color: var(--primary);
+    --success-color: var(--success);
+    --danger-color: var(--danger);
+}
+
+body {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-family-base);
+    padding: 20px;
+}
+
+.scheduling-container {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+    margin: auto;
+}
+
+.scheduling-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--info));
+    color: var(--text-inverse);
+    padding: 30px 20px;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+}
+
+.scheduling-header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.scheduling-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+.scheduling-body {
+    padding: 30px 20px;
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.form-control,
+.form-select {
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    padding: 10px 12px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+.btn {
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.contract-info {
+    background: var(--gray-100);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.contract-info h6 {
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.contract-info p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--gray-200);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.success-message {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.success-icon {
+    font-size: 60px;
+    color: var(--success-color);
+    margin-bottom: 20px;
+}
+
+.required {
+    color: var(--danger-color);
+}

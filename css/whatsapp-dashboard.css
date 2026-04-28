@@ -1,0 +1,36 @@
+/* WhatsApp dashboard page styles */
+.card-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--cor-primaria, #007bff);
+}
+
+.config-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--gray-100);
+  border-radius: 8px;
+}
+
+.config-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.config-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+#dashboard-loading-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}

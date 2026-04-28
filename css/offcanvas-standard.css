@@ -1,0 +1,145 @@
+/**
+ * Offcanvas Standard - Padrão Único para Painéis Laterais
+ * Alinha visualmente com modal-standard.css
+ * 
+ * @version 1.0.0
+ * @date 2025-12-15
+ */
+
+/* ======================
+   BASE STRUCTURE
+   ====================== */
+
+.offcanvas {
+  background-color: var(--bg-surface, #FFFFFF);
+  box-shadow: var(--shadow-xl);
+  border-left: 1px solid var(--border-color, #E5E7EB);
+  z-index: var(--z-offcanvas, 1045);
+}
+
+
+/* Backdrop consistente com Modais */
+.offcanvas-backdrop {
+  background-color: var(--modal-backdrop-bg, rgba(0, 0, 0, 0.5));
+  z-index: var(--z-modal-backdrop, 1040);
+}
+
+.offcanvas-backdrop.show {
+  opacity: 1;
+}
+
+/* ======================
+   HEADER (Igual ao Modal)
+   ====================== */
+
+.offcanvas-header {
+  padding: var(--spacing-lg, 1.5rem);
+  background: var(--bg-elevated, #FFFFFF);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* Linha decorativa no bottom do header */
+.offcanvas-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    var(--primary, #0039BA) 0%, 
+    transparent 100%
+  );
+}
+
+.offcanvas-title {
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #000000);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.offcanvas-title i {
+  color: var(--primary, #0039BA);
+  font-size: 1.5rem;
+}
+
+
+/* Botão Fechar */
+.offcanvas-header .btn-close {
+  padding: 0.75rem;
+  margin: -0.75rem -0.75rem -0.75rem auto;
+  transition: var(--transition-base, 300ms ease);
+  border-radius: 0.5rem;
+  opacity: 0.5;
+}
+
+.offcanvas-header .btn-close:hover {
+  opacity: 1;
+  transform: rotate(90deg);
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+
+/* ======================
+   BODY
+   ====================== */
+
+.offcanvas-body {
+  padding: var(--spacing-lg, 1.5rem);
+  overflow-y: auto;
+  color: var(--text-primary);
+}
+
+/* Scrollbar customizada */
+.offcanvas-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.offcanvas-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.offcanvas-body::-webkit-scrollbar-thumb {
+  background: var(--gray-300, #D1D5DB);
+  border-radius: 3px;
+}
+
+
+/* ======================
+   FOOTER (Custom, não nativo do Bootstrap)
+   ====================== */
+
+.offcanvas-footer {
+  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+  border-top: 1px solid var(--border-color, #E5E7EB);
+  background: var(--bg-elevated, #FFFFFF);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+
+/* ======================
+   LARGURAS CUSTOMIZADAS
+   (Substitui utilities.css)
+   ====================== */
+
+.offcanvas-sm { width: 320px !important; }
+.offcanvas-md { width: 480px !important; }
+.offcanvas-lg { width: 640px !important; }
+.offcanvas-xl { width: 800px !important; }
+
+@media (max-width: 576px) {
+  .offcanvas-sm, .offcanvas-md, .offcanvas-lg, .offcanvas-xl {
+    width: 100% !important;
+  }
+}

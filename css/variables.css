@@ -1,0 +1,346 @@
+/**
+ * Design Tokens - Sistema de Design Unificado
+ * Usar SOMENTE estas variaveis em todo o projeto
+ *
+ * @version 1.1.0
+ * @date 2026-02-26
+ *
+ * FASE 1 (fundacao):
+ * - Contrato de tokens canonicos congelado
+ * - Aliases legados mantidos apenas para compatibilidade
+ * - Codigo novo deve usar somente tokens canonicos
+ */
+
+:root {
+  /* ======================
+     ESCALA GLOBAL DA INTERFACE
+     ====================== */
+  --app-zoom: 0.9;
+
+  /* ======================
+     CORES PRINCIPAIS
+     ====================== */
+  --primary: #0039BA;          /* Persian Blue */
+  --primary-hover: #002A8C;
+  --primary-light: #1A5CDB;
+
+  --secondary: #4A5568;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
+
+  /* ======================
+     CORES NEUTRAS
+     ====================== */
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --gray-900: #111827;
+
+  /* ======================
+     FUNDOS E SUPERFICIES
+     ====================== */
+  --bg-body: #F5F7FA;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+
+  /* ======================
+     TEXTOS (hierarquia obrigatoria)
+     ====================== */
+  --text-primary: #000000;
+  --text-secondary: #4A5568;
+  --text-tertiary: #4B5563;
+  --text-muted: #6B7280;
+  --text-disabled: #9CA3AF;
+  --text-inverse: #FFFFFF;
+
+  /* ======================
+     KANBAN
+     ====================== */
+  --kanban-board-bg: transparent;
+  --kanban-toolbar-bg: var(--bg-surface);
+  --kanban-toolbar-border: var(--border-color);
+  --kanban-column-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(245, 247, 250, 0.98));
+  --kanban-column-border: rgba(0, 57, 186, 0.08);
+  --kanban-card-shadow: var(--shadow-sm);
+  --kanban-card-shadow-hover: var(--shadow-lg);
+  --kanban-scroll-track: #f1f3f5;
+  --kanban-scroll-thumb: rgba(0, 57, 186, 0.4);
+  --kanban-scroll-thumb-hover: rgba(0, 57, 186, 0.7);
+  --kanban-placeholder-bg: linear-gradient(90deg, rgba(0, 57, 186, 0.06), rgba(0, 57, 186, 0.03));
+  --kanban-placeholder-border: rgba(0, 57, 186, 0.2);
+  --kanban-orphan-bg: #FFF8E6;
+  --kanban-orphan-border: var(--warning);
+  --kanban-orphan-heading: #B45309;
+
+  /* ======================
+     BORDAS
+     ====================== */
+  --border-color: #E5E7EB;
+  --border-subtle: rgba(229, 231, 235, 0.65);
+  --border-emphasis: rgba(0, 57, 186, 0.26);
+  --border-strong: rgba(0, 57, 186, 0.4);
+  --border-radius-sm: 0.375rem;  /* 6px */
+  --border-radius-md: 0.5rem;    /* 8px */
+  --border-radius-lg: 0.75rem;   /* 12px */
+  --border-radius-xl: 1rem;      /* 16px */
+
+  /* ======================
+     CONTROLES (inputs/selects/textarea)
+     ====================== */
+  --control-bg: #F9FAFB;
+  --control-bg-hover: #F3F4F6;
+  --control-border: var(--border-color);
+  --control-border-focus: rgba(0, 57, 186, 0.55);
+  --control-focus-ring: 0 0 0 3px rgba(0, 57, 186, 0.16);
+  --control-placeholder: #9CA3AF;
+
+  /* ======================
+     SOMBRAS
+     ====================== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 57, 186, 0.08);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  /* ======================
+     ESPACAMENTOS (base 4px)
+     ====================== */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+
+  /* ======================
+     TIPOGRAFIA
+     ====================== */
+  --font-family-base: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-family-code: 'Source Code Pro', 'Courier New', monospace;
+
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ======================
+     TRANSICOES
+     ====================== */
+  --transition-fast: 150ms ease;
+  --transition-base: 300ms ease;
+  --transition-slow: 500ms ease;
+
+  /* ======================
+     Z-INDEX SCALE
+     ====================== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-offcanvas: 1045;
+  --z-modal: 1050;
+  --z-popover: 1070;
+  --z-tooltip: 1080;
+  --z-toast: 1090;
+
+  /* ======================
+     LAYOUT E SIDEBAR
+     ====================== */
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 70px;
+  --sidebar-bg-gradient: linear-gradient(180deg, var(--primary) 0%, #001a4d 100%);
+
+  /* ======================
+     ANIMACOES
+     ====================== */
+  --animation-duration: 0.3s;
+  --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ======================
+     ALIASES LEGADOS (DEPRECATED)
+     Manter somente para transicao de codigo antigo.
+     Nao usar em novos componentes.
+     ====================== */
+  --primary-color: var(--primary);
+  --secondary-color: var(--secondary);
+  --success-color: var(--success);
+  --danger-color: var(--danger);
+  --warning-color: var(--warning);
+  --info-color: var(--info);
+  --light-color: var(--bg-body);
+  --dark-color: var(--text-primary);
+  --primary-blue: var(--primary);
+  --primary-blue-dark: var(--primary-hover);
+  --cor-primaria: var(--primary);
+  --cor-primaria-hover: var(--primary-hover);
+  --cor-primaria-light: var(--primary-light);
+  --cor-fundo: var(--bg-body);
+  --cor-superficie: var(--bg-surface);
+  --cor-texto: var(--text-primary);
+  --cor-texto-suave: var(--text-secondary);
+  --cor-borda: var(--border-color);
+  --bg-color: var(--bg-body);
+  --text-color: var(--text-primary);
+  --card-bg: var(--bg-surface);
+  --input-bg: var(--control-bg);
+  --modal-bg: var(--bg-surface);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* ======================
+     ALINHAMENTO BOOTSTRAP (LIGHT)
+     ====================== */
+  --bs-body-bg: var(--bg-body);
+  --bs-body-color: var(--text-primary);
+  --bs-border-color: var(--border-color);
+  --bs-secondary-color: var(--text-secondary);
+  --bs-secondary-bg: var(--bg-surface);
+  --bs-tertiary-bg: var(--bg-elevated);
+  --bs-link-color: var(--primary);
+  --bs-link-hover-color: var(--primary-hover);
+  --bs-card-bg: var(--bg-surface);
+  --bs-card-color: var(--text-primary);
+  --bs-card-border-color: var(--border-color);
+  --bs-modal-bg: var(--bg-surface);
+  --bs-modal-color: var(--text-primary);
+  --bs-modal-border-color: var(--border-color);
+  --bs-modal-header-border-color: var(--border-color);
+  --bs-modal-footer-border-color: var(--border-color);
+
+  --bs-light: var(--gray-100);
+  --bs-gray-100: var(--gray-100);
+  --bs-gray-200: var(--gray-200);
+  --bs-gray-300: var(--gray-300);
+  --bs-gray-400: var(--gray-400);
+  --bs-gray-500: var(--gray-500);
+  --bs-gray-600: var(--gray-600);
+  --bs-gray-700: var(--gray-700);
+  --bs-gray-800: var(--gray-800);
+  --bs-gray-900: var(--gray-900);
+}
+
+/* ======================
+   DARK MODE OVERRIDES
+   ====================== */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Core palette */
+  --primary: #4c7dff;
+  --primary-hover: #3b6ef5;
+  --primary-light: #7ca2ff;
+
+  --secondary: #9ca3af;
+  --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --info: #60a5fa;
+
+  /* Neutral scale (inverted for dark UI) */
+  --gray-50: #0b1220;
+  --gray-100: #0f172a;
+  --gray-200: #111827;
+  --gray-300: #1f2937;
+  --gray-400: #334155;
+  --gray-500: #475569;
+  --gray-600: #64748b;
+  --gray-700: #94a3b8;
+  --gray-800: #cbd5e1;
+  --gray-900: #f8fafc;
+
+  /* Surfaces */
+  --bg-body: #0b1220;
+  --bg-surface: #0f172a;
+  --bg-elevated: #111c33;
+
+  /* Text */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #b6c2d3;
+  --text-muted: #94a3b8;
+  --text-disabled: #64748b;
+
+  /* Borders and shadows */
+  --border-color: #243146;
+  --border-subtle: rgba(36, 49, 70, 0.72);
+  --border-emphasis: rgba(76, 125, 255, 0.34);
+  --border-strong: rgba(124, 162, 255, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 14px 24px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 24px 40px rgba(0, 0, 0, 0.55);
+  --shadow-color: rgba(0, 0, 0, 0.55);
+
+  /* Controls */
+  --control-bg: #0b152b;
+  --control-bg-hover: #101b33;
+  --control-border: #2d3a53;
+  --control-border-focus: rgba(124, 162, 255, 0.6);
+  --control-focus-ring: 0 0 0 3px rgba(76, 125, 255, 0.22);
+  --control-placeholder: #6b7a92;
+
+  /* Sidebar */
+  --sidebar-bg-gradient: linear-gradient(180deg, #0a2565 0%, #050b1f 100%);
+
+  /* Kanban */
+  --kanban-column-bg: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+  --kanban-column-border: rgba(96, 165, 250, 0.15);
+  --kanban-scroll-track: #1f2937;
+  --kanban-scroll-thumb: rgba(96, 165, 250, 0.45);
+  --kanban-scroll-thumb-hover: rgba(96, 165, 250, 0.7);
+  --kanban-placeholder-bg: linear-gradient(90deg, rgba(96, 165, 250, 0.12), rgba(96, 165, 250, 0.06));
+  --kanban-placeholder-border: rgba(96, 165, 250, 0.35);
+  --kanban-orphan-bg: rgba(251, 191, 36, 0.12);
+  --kanban-orphan-border: #fbbf24;
+  --kanban-orphan-heading: #fcd34d;
+
+  /* Bootstrap alignment */
+  --bs-body-bg: var(--bg-body);
+  --bs-body-color: var(--text-primary);
+  --bs-border-color: var(--border-color);
+  --bs-secondary-color: var(--text-secondary);
+  --bs-secondary-bg: var(--bg-surface);
+  --bs-tertiary-bg: var(--bg-elevated);
+  --bs-link-color: var(--primary);
+  --bs-link-hover-color: var(--primary-light);
+  --bs-card-bg: var(--bg-surface);
+  --bs-card-color: var(--text-primary);
+  --bs-card-border-color: var(--border-color);
+  --bs-modal-bg: var(--bg-surface);
+  --bs-modal-color: var(--text-primary);
+  --bs-modal-border-color: var(--border-color);
+  --bs-modal-header-border-color: var(--border-color);
+  --bs-modal-footer-border-color: var(--border-color);
+
+  /* Bootstrap neutral palette alignment */
+  --bs-light: var(--gray-200);
+  --bs-gray-100: var(--gray-100);
+  --bs-gray-200: var(--gray-200);
+  --bs-gray-300: var(--gray-300);
+  --bs-gray-400: var(--gray-400);
+  --bs-gray-500: var(--gray-500);
+  --bs-gray-600: var(--gray-600);
+  --bs-gray-700: var(--gray-700);
+  --bs-gray-800: var(--gray-800);
+  --bs-gray-900: var(--gray-900);
+}

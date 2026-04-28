@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Sistema Gestor de Processos</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/modal-standard.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/ai-components.css" />
+    <link rel="stylesheet" href="css/ai-chat.css" />
+    <!-- analyst-chat.css removido: estilos integrados em ai-chat.css -->
+    <link rel="stylesheet" href="css/utilities.css" />
+    
+    <!-- Theme (light/dark) -->
+    <script src="js/themeInit.js" defer></script>
+  </head>
+
+  <body>
+    <div id="sidebar-shell-mount"></div>
+    <script src="js/sidebarShell.js"></script>
+    <script>
+      window.SidebarShell.render({
+        mountId: 'sidebar-shell-mount',
+        mode: 'app',
+        activePage: 'dashboard'
+      });
+    </script>
+
+    <main id="main-content">
+      <div id="page-dashboard" class="page page-main-full active">
+        <section id="dashboard">
+          <div class="container-fluid py-3">
+            <!-- Header do Dashboard -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h1 class="h4 fw-bold mb-1" id="dashboard-greeting">Painel de Controle</h1>
+                <p class="text-secondary mb-0 small" id="dashboard-subtitle">Visão geral dos processos</p>
+              </div>
+              <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#kpiManagerOffcanvas" aria-controls="kpiManagerOffcanvas" id="open-kpi-manager-btn">
+                <i class="bi bi-sliders me-1"></i>Gerenciar KPIs
+              </button>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="row g-3" id="dashboard-kpis-row">
+              <!-- KPIs personalizados inseridos dinamicamente -->
+            </div>
+          </div>
+        </section>
+
+        <section id="activity-feed-container" class="mt-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+              <h2 class="h5 fw-semibold mb-0"><i class="bi bi-activity text-primary me-2"></i>Atividades Recentes</h2>
+              <button id="btn-refresh-feed" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise"></i> Atualizar
+              </button>
+            </div>
+            <div class="card-body">
+              <div id="activity-feed-list" class="list-group list-group-flush">
+                <div class="text-center text-muted py-4">
+                  <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                  Carregando atividades...
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <!-- page-arquivados migrada para arquivados.html -->
+      <!-- page-relatorios migrada para relatorios.html -->
+      <!-- page-ferramentas migrada para ferramentas.html -->
+      <!-- page-agenda migrada para agenda.html -->
+
+            <!-- page-perfil migrada para profile.html -->
+
+<!-- page-whatsapp migrada para whatsapp.html -->
+      <!-- page-configuracoes migrada para configuracoes.html -->
+      <!-- ? Modal de Permissões (injetado via js/modals/AdminSettingsModals.js) -->
+
+        <!-- ============== Modais (mantidos / padronizados) ============== -->
+        <!-- Modais IA/Importação + SLA (injetados via js/modals/AiAndSlaModals.js) -->
+
+        <!-- Modal Configuração de Número WhatsApp (injetado via js/modals/WhatsAppSettingsModals.js) -->
+
+        <!-- Modal Usuários e Permissões (injetado via js/modals/UsersAndStatusModals.js) -->
+
+        <!-- Modais Status/Regras/Configurações (injetado via js/modals/UsersAndStatusModals.js) -->
+
+      <!-- Modal: Configuração de Prazos SLA (injetado via js/modals/AiAndSlaModals.js) -->
+
+      <!-- ? Gerenciador de Modais (modularizado / cacheável) -->
+      <script type="module" src="js/modalManager.js"></script>
+    </main>
+
+    <!-- ? Modal "Detalhes do Processo" (injetado via js/modals/DetailsModal.js) -->
+
+  <!-- Bootstrap 5 JavaScript Bundle (mantido no final do body; removida duplicação abaixo) -->
+  <!-- OBS: Hash antigo removido; bundle definitivo fica próximo ao </body> -->
+  
+    <!-- PDF.js -->
+
+    <!-- ? Modularização UI (injeção de DOM via ES Modules) -->
+    <script>
+      window.__AUTO_RENDER_UI_COMPONENTS__ = false;
+    </script>
+    <script type="module">
+      import { initIndexShellUIComponents } from './js/uiComponents/indexShellInit.js';
+
+      initIndexShellUIComponents();
+    </script>
+    <!-- Módulo UI Construtoras & Seed (Restaurado 2025-09-20) -->
+  <!-- Página de Ferramentas -->
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <!-- ?? SEGURANÇA: Firebase App Check - Proteção contra abuso -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-check-compat.js"></script>
+
+  <!-- ?? Monitor de Leituras Firestore (deve vir logo após Firebase) -->
+  <script src="js/firestoreReadMonitor.js" type="module"></script>
+  <script src="js/firestoreReadMetricsService.js" type="module"></script>
+
+  <!-- ?? SEGURANÇA: Utilitários de sanitização e proteção CSRF -->
+  <script src="js/securityUtils.js" type="module"></script>
+  <script src="js/csrfProtection.js" type="module"></script>
+
+  <!-- Debug helper global deve vir antes de scripts que o utilizam -->
+  <script src="js/debug.js" defer></script>
+  <script src="js/modernFormEnhancements.js" defer></script>
+
+    <script src="js/dashboardService.js" defer></script>
+  <script src="js/dashboardUI.js" defer></script>
+  <!-- Bootstrap 5 JS Bundle (carregado antes dos módulos) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  
+  <script type="module" src="js/activityLogService.js"></script>
+  <script type="module" src="js/activityLogUI.js"></script>
+  
+  <script src="js/cacheService.js" type="module"></script>
+  
+  <!-- ? NOVO: Módulos WhatsApp Multi-Número -->
+  
+  <!-- ? NOVO: Módulos WhatsApp Avançado (Tags e Quick Messages) -->
+  
+  <!-- ? NOVO: Módulo de Chamadas WhatsApp (WebRTC) -->
+  
+  <!-- Sidebar Controller -->
+  <script src="js/sidebarController.js" defer></script>
+  
+  <!-- Badge Service -->
+  <script src="js/badgeService.js" defer></script>
+
+  <!-- Submenu Controller -->
+  <script src="js/subMenuController.js" defer></script>
+  
+  <!-- Notification Push Service -->
+  <script src="js/notificationPushService.js" defer></script>
+  <script src="js/notificationPushHelpers.js" defer></script>
+  
+  <script type="module" src="js/notificationUI.js"></script>
+
+  <!-- CSV Import Validator UI (Importação Avançada) -->
+  <script type="module" src="js/advanced/csvImportValidatorUI.js"></script>
+
+  <!-- Agências Service & UI -->
+
+  <!-- Cartórios Service & UI -->
+
+  <script type="module" src="js/main.js"></script>
+
+  <!-- Scripts da Agenda Local (agora lazy loaded via main.js) -->
+  <!-- <script src="js/eventsDataModel.js"></script> -->
+  <!-- <script src="js/localCalendarService.js"></script> -->
+  <!-- <script src="js/agendaUI.js"></script> -->
+  <!-- <script src="js/eventNotificationsService.js"></script> -->
+  <!-- <script src="js/processScheduleIntegration.js"></script> -->
+    <div id="notification" class="notification"></div>
+    <!-- Script de migração legacy removido (função eliminada em backend 2025-09-19) -->
+    
+    <!-- Modal Registro de Agente WhatsApp (modularizado) -->
+    <!-- Renderizado via js/modals/WhatsAppAgentModal.js -->
+
+    <!-- ========== REMOVIDO: Modal Encaminhar Mensagem (substituído por collapse inline) ========== -->
+
+    <!-- Modais Construtoras/Empreendimentos (injetados via js/modals/VendorsModals.js) -->
+
+    <!-- Centro de Notificações + Modal WhatsApp Notificações (modularizados) -->
+    <!-- Renderizados via js/offcanvas/NotificationCenterOffcanvas.js e js/modals/WhatsAppNotificationSettingsModal.js -->
+
+    <!-- Chart.js Library (Lazy Loaded) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script> -->
+
+    <!-- Ativar debug para WhatsApp modules -->
+
+    <!-- ConfirmModal + Modal Pendência (modularizados) -->
+    <!-- Renderizados via js/modals/ConfirmModal.js e js/modals/PendenciaModal.js -->
+
+    <!-- ? Script de Migração WhatsApp (dev/admin only) -->
+
+    <!-- Chat Interno integrado ao widget AI -->
+    <script type="module">
+      // Badge refresh periodico do chat interno (via widget AI)
+      const _chatBadgeInterval = setInterval(() => {
+        if (window.aiChatUI?.refreshChatBadge) {
+          window.aiChatUI.refreshChatBadge();
+        }
+      }, 60000);
+      // Refresh inicial apos login
+      setTimeout(() => window.aiChatUI?.refreshChatBadge?.(), 5000);
+    </script>
+
+    <!-- Assistente IA Unificado -->
+    <script type="module">
+      import aiChatUI from './js/aiChatUI.js';
+      import aiAssistantManager from './js/aiAssistantManager.js';
+      
+      // Disponibiliza globalmente para debug e acesso via console
+      window.aiChatUI = aiChatUI;
+      window.aiAssistantManager = aiAssistantManager;
+      
+      // Log de inicialização
+      console.log('? Assistente IA carregado e disponível via window.aiChatUI');
+    </script>
+    <script>
+      window.__APP_BUILD__ = '2026-04-24.18-40-27';
+    </script>
+    <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+

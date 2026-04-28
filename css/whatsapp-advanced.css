@@ -1,0 +1,413 @@
+/* ==========================================================================
+   WHATSAPP - NOTIFICAÇÕES, ANEXOS E DASHBOARD
+   Estilos customizados usando Design Tokens (variables.css)
+   ========================================================================== */
+
+/* ========== PAINEL DE NOTIFICAÇÕES WHATSAPP ========== */
+#whatsapp-notifications-list {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.whatsapp-notification-item {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  background-color: var(--bg-surface, #FFFFFF);
+  color: var(--text-primary, #000000);
+}
+
+.whatsapp-notification-item:hover {
+  background-color: var(--gray-50, #F9FAFB);
+}
+
+.whatsapp-notification-item.unread {
+  background-color: rgba(59, 130, 246, 0.05); /* Info color very light */
+  border-left: 3px solid var(--info, #3B82F6);
+}
+
+.whatsapp-notification-item .notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.whatsapp-notification-item .notification-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: inherit;
+}
+
+.whatsapp-notification-item .notification-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #4A5568);
+}
+
+.whatsapp-notification-item .notification-body {
+  font-size: 0.875rem;
+  color: var(--text-muted, #6B7280);
+  margin-top: 4px;
+}
+
+.whatsapp-notification-item .notification-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 1.25rem;
+}
+
+/* Manter cores semânticas específicas de notificação */
+.whatsapp-notification-item .notification-icon.new-message {
+  background-color: rgba(13, 202, 240, 0.1);
+  color: var(--info, #0dcaf0);
+}
+
+.whatsapp-notification-item .notification-icon.new-chat {
+  background-color: rgba(25, 135, 84, 0.1);
+  color: var(--success, #198754);
+}
+
+.whatsapp-notification-item .notification-icon.assigned {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: var(--warning, #ffc107);
+}
+
+.whatsapp-notification-item .notification-icon.transferred {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--danger, #dc3545);
+}
+
+/* ========== MODAL DE ANEXOS ========== */
+#whatsapp-attachment-preview {
+  min-height: 150px;
+  border: 2px dashed var(--border-color, #E5E7EB);
+  border-radius: var(--border-radius-md, 0.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gray-50, #F9FAFB);
+}
+
+
+#whatsapp-attachment-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+#whatsapp-attachment-preview .file-info {
+  text-align: center;
+  padding: 20px;
+}
+
+#whatsapp-attachment-preview .file-icon {
+  font-size: 3rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+#whatsapp-attachment-preview .file-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text-primary);
+}
+
+#whatsapp-attachment-preview .file-size {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* ========== GALERIA DE MÍDIA ========== */
+#whatsapp-media-gallery-container {
+  min-height: 300px;
+}
+
+.media-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.media-gallery-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 1px solid var(--border-color);
+}
+
+.media-gallery-item:hover {
+  transform: scale(1.05);
+}
+
+.media-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-gallery-item .media-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: white;
+  padding: 8px;
+  font-size: 0.75rem;
+}
+
+.media-gallery-item .media-type-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* ========== MENSAGENS COM ANEXOS ========== */
+.whatsapp-message-media {
+  max-width: 300px;
+  margin-bottom: 8px;
+}
+
+.whatsapp-message-media img {
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.whatsapp-message-media img:hover {
+  opacity: 0.9;
+}
+
+.whatsapp-message-media .media-document {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: var(--bg-elevated, #FFFFFF);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background-color 0.2s;
+}
+
+.whatsapp-message-media .media-document:hover {
+  background: var(--gray-100, #F3F4F6);
+}
+
+.whatsapp-message-media .media-document-icon {
+  font-size: 2rem;
+  margin-right: 12px;
+  color: var(--info, #3B82F6);
+}
+
+.whatsapp-message-media .media-document-info {
+  flex: 1;
+}
+
+.whatsapp-message-media .media-document-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.whatsapp-message-media .media-document-size {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.whatsapp-message-media audio {
+  width: 100%;
+  max-width: 300px;
+}
+
+.whatsapp-message-media video {
+  width: 100%;
+  max-width: 300px;
+  border-radius: var(--border-radius-md);
+}
+
+.whatsapp-message-caption {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+/* ========== DASHBOARD - CARDS PERSONALIZADOS ========== */
+.stat-box {
+  text-align: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-box h4 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.stat-box p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* ========== DASHBOARD - RANKING DE AGENTES ========== */
+.agent-ranking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.agent-ranking-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+  color: var(--text-primary);
+}
+
+.agent-ranking-item:hover {
+  background-color: var(--gray-50);
+}
+
+.agent-ranking-item:last-child {
+  border-bottom: none;
+}
+
+.agent-ranking-position {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 12px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: white;
+  font-size: 0.875rem;
+}
+
+.agent-ranking-position.top-1 {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  font-size: 1rem;
+  width: 36px;
+  height: 36px;
+}
+
+.agent-ranking-position.top-2 {
+  background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%);
+}
+
+.agent-ranking-position.top-3 {
+  background: linear-gradient(135deg, #CD7F32 0%, #B87333 100%);
+}
+
+.agent-ranking-info {
+  flex: 1;
+}
+
+.agent-ranking-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.agent-ranking-stats {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.agent-ranking-score {
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+/* ========== DASHBOARD - GRÁFICOS ========== */
+.chart-container {
+  position: relative;
+  height: 300px;
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.whatsapp-notification-item.new {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+#notification-badge.has-notifications,
+#notification-btn.has-notifications {
+  animation: pulse 2s infinite;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 768px) {
+  .media-gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .whatsapp-message-media {
+    max-width: 100%;
+  }
+  
+  .agent-ranking-item {
+    padding: 8px;
+  }
+  
+  .agent-ranking-position {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ========== ACESSIBILIDADE ========== */
+.whatsapp-notification-item:focus,
+.media-gallery-item:focus {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+
+

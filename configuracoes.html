@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configurações - Sistema Gestor de Processos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/modal-standard.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/themeInit.js" defer></script>
+</head>
+<body>
+  <div id="sidebar-shell-mount"></div>
+  <script src="js/sidebarShell.js"></script>
+  <script>
+    window.SidebarShell.render({
+      mountId: 'sidebar-shell-mount',
+      mode: 'standalone',
+      activePage: 'configuracoes'
+    });
+  </script>
+
+  <main id="main-content">
+    <div id="page-configuracoes" class="page page-main-full admin-only active">
+      <div class="settings-layout">
+        <aside class="settings-sidebar">
+          <div class="settings-sidebar-header">
+            <h2 class="h6 mb-1">Centro de Configurações</h2>
+            <p class="small mb-0 text-muted">Navegue por módulos e cadastros sem perder contexto.</p>
+          </div>
+          <nav class="settings-nav" aria-label="Navegação de Configurações">
+            <span class="settings-nav-group-label">Administração</span>
+            <button type="button" class="active" data-target="panel-overview">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Visão Geral</span>
+            </button>
+            <button type="button" data-target="panel-ia">
+              <i class="bi bi-cpu"></i>
+              <span>IA e Importação</span>
+            </button>
+            <button type="button" data-target="panel-status">
+              <i class="bi bi-diagram-3"></i>
+              <span>Status e SLA</span>
+            </button>
+            <button type="button" data-target="panel-users">
+              <i class="bi bi-shield-check"></i>
+              <span>Usuários e Permissões</span>
+            </button>
+            <button type="button" data-target="panel-notifications">
+              <i class="bi bi-bell"></i>
+              <span>Notificações</span>
+            </button>
+
+            <span class="settings-nav-group-label">Cadastros</span>
+            <button type="button" data-target="panel-vendors">
+              <i class="bi bi-buildings"></i>
+              <span>Construtoras</span>
+            </button>
+            <button type="button" data-target="panel-agencias">
+              <i class="bi bi-bank2"></i>
+              <span>Agências CEF</span>
+            </button>
+            <button type="button" data-target="panel-cartorios">
+              <i class="bi bi-building"></i>
+              <span>Cartórios</span>
+            </button>
+
+            <span class="settings-nav-group-label">Integrações</span>
+            <button type="button" data-target="panel-whatsapp">
+              <i class="bi bi-whatsapp"></i>
+              <span>WhatsApp Business</span>
+            </button>
+          </nav>
+        </aside>
+        <div class="settings-content">
+          <div id="panel-overview" class="settings-panel active" aria-labelledby="overview-title">
+            <div class="settings-page-header settings-card mb-4">
+              <div class="d-flex flex-column flex-xl-row gap-3 align-items-start align-items-xl-center justify-content-between">
+                <div>
+                  <h2 id="overview-title" class="mb-2">Configurações do Sistema</h2>
+                  <p class="subtle-help mb-0">Centralize regras de operação, permissões e integrações críticas em um único fluxo administrativo.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm" data-open-panel="panel-status">
+                    <i class="bi bi-diagram-3 me-1"></i>Status e SLA
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" data-open-panel="panel-users">
+                    <i class="bi bi-shield-check me-1"></i>Permissões
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="btn-open-read-metrics-quick">
+                    <i class="bi bi-speedometer2 me-1"></i>Monitor de Leituras
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-kpi-grid">
+              <article class="settings-kpi-card">
+                <span class="settings-kpi-label">Operação diária</span>
+                <strong class="settings-kpi-value">Fluxo de Status</strong>
+                <small>Controle de etapas, SLA e regras obrigatórias.</small>
+              </article>
+              <article class="settings-kpi-card">
+                <span class="settings-kpi-label">Governança</span>
+                <strong class="settings-kpi-value">Permissões</strong>
+                <small>Perfis de acesso e controle de usuários.</small>
+              </article>
+              <article class="settings-kpi-card">
+                <span class="settings-kpi-label">Base de dados</span>
+                <strong class="settings-kpi-value">Cadastros</strong>
+                <small>Construtoras, agências e cartórios padronizados.</small>
+              </article>
+              <article class="settings-kpi-card">
+                <span class="settings-kpi-label">Integrações</span>
+                <strong class="settings-kpi-value">WhatsApp e IA</strong>
+                <small>Automação e comunicação assistida.</small>
+              </article>
+            </div>
+
+            <div class="settings-card-grid">
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-cpu me-2 text-primary"></i>IA e Importação</h4>
+                <p>Importar CSV com suporte de IA e configurar provedor.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-modal="modal-ia">Acessar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-diagram-3 me-2 text-primary"></i>Status e Regras</h4>
+                <p>Gerir status disponíveis e regras de campos obrigatórios.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-panel="panel-status">Acessar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-shield-check me-2 text-primary"></i>Usuários e Permissões</h4>
+                <p>Criar contas, ajustar permissões e ativar/desativar.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-panel="panel-users">Acessar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-bell me-2 text-primary"></i>Notificações</h4>
+                <p>Preferências de alerta, desktop e limpeza automática.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-modal="notification-settings-modal">Configurar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-buildings me-2 text-primary"></i>Construtoras</h4>
+                <p>Gerir construtoras, empreendimentos e unidades.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-panel="panel-vendors">Gerenciar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-bank2 me-2 text-primary"></i>Agências CEF</h4>
+                <p>Cadastrar e gerenciar agências da Caixa Econômica Federal.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-panel="panel-agencias">Gerenciar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-building me-2 text-primary"></i>Cartórios</h4>
+                <p>Cadastrar e gerenciar cartórios de registro de imóveis.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-panel="panel-cartorios">Gerenciar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-whatsapp me-2 text-primary"></i>WhatsApp Business</h4>
+                <p>Configurar números, agentes, notificações e métricas.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-panel="panel-whatsapp">Acessar</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-speedometer2 me-2 text-primary"></i>Monitor de Leituras</h4>
+                <p>Acompanhe o consumo de leituras do Firestore em tempo real.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" id="btn-open-read-metrics">Acessar</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-ia" class="settings-panel" aria-labelledby="ia-title">
+            <h2 id="ia-title">IA e Importação</h2>
+            <p>Fluxos de importação assistida e configuração de provedores de IA.</p>
+            <div class="settings-card-grid">
+              <div class="settings-mini-card bg-success-subtle border-success">
+                <h4><i class="bi bi-arrow-repeat me-2 text-success"></i>Importação Avançada</h4>
+                <p>Preview, validação, escolha de status e conversão automática de datas/valores.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline btn-success" id="open-csv-validator-btn">Abrir Ferramenta</button></div>
+              </div>
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-braces-asterisk me-2 text-primary"></i>Provedor de IA</h4>
+                <p>Definir provedor, chave e modo de operação.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-modal="modal-ia">Configurar</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-status" class="settings-panel" aria-labelledby="status-title">
+            <h2 id="status-title">Status & Regras</h2>
+            <p>Gerencie o ciclo de vida dos processos, workflows e os campos obrigatórios exigidos em transições críticas.</p>
+            <div class="mb-4">
+              <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#status-workflow-unified-modal">
+                <i class="bi bi-diagram-3 me-2"></i>
+                Gerenciador de Status e Workflows
+              </button>
+              <p class="text-muted mt-2 mb-0 small">
+                <i class="bi bi-info-circle"></i>
+                Acesse todas as configurações de status, workflows, regras e prazos SLA em um único lugar.
+              </p>
+            </div>
+          </div>
+
+          <div id="panel-users" class="settings-panel" aria-labelledby="users-title">
+            <h2 id="users-title"><i class="bi bi-people-fill me-2"></i>Usuários & Permissões</h2>
+            <p class="text-muted">Gerencie usuários e configure permissões granulares de acesso ao sistema.</p>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="badge bg-primary" id="users-count">0 usuários</span>
+              </div>
+              <div>
+                <button type="button" class="btn btn-outline-secondary btn-sm me-2" id="btn-refresh-permissions">
+                  <i class="bi bi-arrow-clockwise"></i> Atualizar
+                </button>
+                <button type="button" class="btn btn-success btn-sm" data-open-modal="modal-usuarios">
+                  <i class="bi bi-person-plus"></i> Gestão de usuários
+                </button>
+              </div>
+            </div>
+            <div id="permissions-users-list" class="mb-3">
+              <div class="text-center p-3">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Carregando...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-notifications" class="settings-panel" aria-labelledby="notifications-title">
+            <h2 id="notifications-title">Notificações</h2>
+            <p>Controle preferências de alerta visual, sonoro e desktop.</p>
+            <div class="settings-card-grid">
+              <div class="settings-mini-card">
+                <h4><i class="bi bi-bell me-2 text-primary"></i>Preferências</h4>
+                <p>Som, desktop, intervalo de verificação.</p>
+                <div class="actions"><button type="button" class="btn-action btn-inline" data-open-modal="notification-settings-modal">Configurar</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-agencias" class="settings-panel" aria-labelledby="agencias-title">
+            <h2 id="agencias-title"><i class="bi bi-bank2 me-2"></i>Agências CEF</h2>
+            <p class="text-muted">Gerencie as agências da Caixa Econômica Federal disponíveis no sistema.</p>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="badge bg-primary" id="agencias-count">0 agências</span>
+              </div>
+              <button type="button" class="btn btn-success" id="btn-add-agencia">
+                <i class="bi bi-plus-circle me-2"></i>Nova Agência
+              </button>
+            </div>
+            <div class="settings-card">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th class="th-w-150">Código</th>
+                      <th>Nome</th>
+                      <th class="th-w-100" class="text-center">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="agencias-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-cartorios" class="settings-panel" aria-labelledby="cartorios-title">
+            <h2 id="cartorios-title"><i class="bi bi-building me-2"></i>Cartórios de Registro de Imóveis</h2>
+            <p class="text-muted">Gerencie os cartórios de registro de imóveis disponíveis no sistema.</p>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="badge bg-primary" id="cartorios-count">0 cartórios</span>
+              </div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-outline-info" id="btn-import-cartorios">
+                  <i class="bi bi-download me-2"></i>Importar dos Contratos
+                </button>
+                <button type="button" class="btn btn-success" id="btn-add-cartorio">
+                  <i class="bi bi-plus-circle me-2"></i>Novo Cartório
+                </button>
+              </div>
+            </div>
+            <div class="settings-card">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Nome do Cartório</th>
+                      <th>Cidade</th>
+                      <th>UF</th>
+                      <th class="text-center th-w-fixed-sm">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cartorios-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-whatsapp" class="settings-panel" aria-labelledby="whatsapp-title">
+            <h2 id="whatsapp-title"><i class="bi bi-whatsapp me-2"></i>WhatsApp Business API</h2>
+            <p class="text-muted">Configure a integração com WhatsApp Business Cloud API para atendimento multiagente centralizado.</p>
+            <div class="settings-card mb-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h3><i class="bi bi-toggle-on me-2"></i>Status da Integração</h3>
+                  <p class="text-muted small mb-0">Habilite ou desabilite o módulo WhatsApp no sistema</p>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input form-check-input-lg" type="checkbox" id="whatsapp-enabled">
+                  <label class="form-check-label ms-2" for="whatsapp-enabled">
+                    <strong id="whatsapp-status-text">Desabilitado</strong>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="settings-card h-100 cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal-whatsapp-numbers">
+                  <div class="text-center p-4">
+                    <i class="bi bi-phone text-primary icon-xl"></i>
+                    <h4 class="mt-3">Números WhatsApp</h4>
+                    <p class="text-muted small mb-0">Gerencie múltiplos números Business</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="settings-card h-100 cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal-whatsapp-config">
+                  <div class="text-center p-4">
+                    <i class="bi bi-gear text-success icon-xl"></i>
+                    <h4 class="mt-3">Configurações do WhatsApp</h4>
+                    <p class="text-muted small mb-0">Webhook, limites e automações</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="settings-card h-100 cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal-whatsapp-stats">
+                  <div class="text-center p-4">
+                    <i class="bi bi-bar-chart text-info icon-xl"></i>
+                    <h4 class="mt-3">Estatísticas</h4>
+                    <p class="text-muted small mb-0">Métricas e relatórios detalhados</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="settings-card h-100 cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal-whatsapp-agents">
+                  <div class="text-center p-4">
+                    <i class="bi bi-people text-warning icon-xl"></i>
+                    <h4 class="mt-3">Agentes Registrados</h4>
+                    <p class="text-muted small mb-0">Usuários habilitados para atendimento</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="settings-card h-100 cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal-whatsapp-templates">
+                  <div class="text-center p-4">
+                    <i class="bi bi-bookmark text-danger icon-xl"></i>
+                    <h4 class="mt-3">Templates de Mensagem</h4>
+                    <p class="text-muted small mb-0">Modelos aprovados pelo Meta</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="settings-card h-100 cursor-pointer" onclick="window.open('https://developers.facebook.com/docs/whatsapp/cloud-api', '_blank')">
+                  <div class="text-center p-4">
+                    <i class="bi bi-book text-secondary icon-xl"></i>
+                    <h4 class="mt-3">Documentação</h4>
+                    <p class="text-muted small mb-0">Meta WhatsApp Cloud API</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-vendors" class="settings-panel" aria-labelledby="vendors-title">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h2 id="vendors-title" class="mb-1">Construtoras & Empreendimentos</h2>
+                <p class="text-muted mb-0">Gerencie construtoras, empreendimentos, blocos e apartamentos</p>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-warning" id="btn-detect-duplicates" title="Detectar e unificar construtoras duplicadas (ex: AXAR e Axar)">
+                  <i class="bi bi-intersect me-1"></i> Unificar Duplicadas
+                </button>
+                <button type="button" class="btn btn-outline-info" id="btn-sync-vendors" title="Cadastrar automaticamente construtoras a partir dos processos existentes">
+                  <i class="bi bi-arrow-repeat me-1"></i> Sincronizar dos Processos
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="btn-normalize-vendors" title="Normalizar empreendimentos antigos (strings/sem ID) para o novo formato">
+                  <i class="bi bi-wrench-adjustable me-1"></i> Normalizar Legado
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-new-vendor">
+                  <i class="bi bi-plus-circle me-1"></i> Nova Construtora
+                </button>
+              </div>
+            </div>
+
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-search"></i></span>
+                      <input type="text" id="vendor-search" class="form-control" placeholder="Buscar por nome, CNPJ, email..." />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <select id="vendor-status-filter" class="form-select">
+                      <option value="">Todos os status</option>
+                      <option value="active">Apenas Ativos</option>
+                      <option value="inactive">Apenas Inativos</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-outline-secondary w-100" id="btn-clear-filters">
+                      <i class="bi bi-x-circle me-1"></i> Limpar Filtros
+                    </button>
+                  </div>
+                </div>
+                <div class="row g-3 mt-1">
+                  <div class="col-md-3">
+                    <select id="vendor-emp-filter" class="form-select">
+                      <option value="">Todos os empreendimentos</option>
+                      <option value="with">Com empreendimentos</option>
+                      <option value="without">Sem empreendimentos</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <select id="vendor-sort" class="form-select">
+                      <option value="name-asc">Nome (A-Z)</option>
+                      <option value="name-desc">Nome (Z-A)</option>
+                      <option value="emp-desc">Mais empreendimentos</option>
+                      <option value="emp-asc">Menos empreendimentos</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-center">
+                    <small class="text-muted">Dica: Ctrl+K foca a busca</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle" id="vendors-table">
+                    <thead class="table-light">
+                      <tr>
+                        <th class="th-w-30">Nome</th>
+                        <th class="th-w-15">CNPJ</th>
+                        <th class="th-w-15">Telefone</th>
+                        <th class="th-w-15">E-mail</th>
+                        <th class="th-w-10 text-center">Empreend.</th>
+                        <th class="th-w-10 text-center">Status</th>
+                        <th class="th-w-5 text-center">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="vendors-table-body">
+                      <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                          <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                          Carregando construtoras...
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div id="vendors-empty-state" class="text-center py-5 d-none">
+                  <i class="bi bi-building icon-xl text-muted"></i>
+                  <p class="text-muted mt-3">Nenhuma construtora encontrada</p>
+                  <button type="button" class="btn btn-primary btn-sm" id="btn-new-vendor-empty">
+                    <i class="bi bi-plus-circle me-1"></i> Cadastrar Primeira Construtora
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script type="module" src="js/modalManager.js"></script>
+    </div>
+  </main>
+
+  <div id="notification" class="notification"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="js/pdfjsInit.js"></script>
+  <script>
+    window.__AUTO_RENDER_UI_COMPONENTS__ = false;
+    window.__INITIAL_PAGE__ = 'configuracoes';
+  </script>
+  <script type="module">
+    import { initConfigShellUIComponents } from './js/uiComponents/configShellInit.js';
+    initConfigShellUIComponents();
+  </script>
+  <script type="module" src="./js/vendorsUI.js"></script>
+  <script type="module" src="./js/vendorsInlineIntegration.js"></script>
+  <script type="module" src="./js/vendorsMigration.js"></script>
+  <script type="module" src="./js/vendorsMigrationUI.js"></script>
+  <script type="module" src="./js/seedVendors.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-check-compat.js"></script>
+  <script src="js/firestoreReadMetricsService.js" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="js/debug.js" defer></script>
+  <script src="js/modernFormEnhancements.js" defer></script>
+  <script src="js/standaloneSidebar.js" defer></script>
+  <script src="js/backupService.js" defer></script>
+  <script src="js/backupUI.js" defer></script>
+  <script src="js/securityUtils.js" type="module"></script>
+  <script src="js/csrfProtection.js" type="module"></script>
+  <script src="js/aiSettings.js" type="module"></script>
+  <script src="js/statusAdminUI.js" type="module"></script>
+  <script src="js/statusTableConfigSimple.js" defer></script>
+  <script src="js/cacheService.js" type="module"></script>
+  <script src="js/slaStatusConfigService.js" defer></script>
+  <script src="js/slaDateConfigService.js" defer></script>
+  <script src="js/whatsappPhoneManager.js" type="module"></script>
+  <script src="js/whatsappPhoneConfigUI.js" type="module"></script>
+  <script src="js/whatsappTags.js" type="module"></script>
+  <script src="js/whatsappQuickMessages.js" type="module"></script>
+  <script src="js/whatsappTagsUI.js" type="module"></script>
+  <script src="js/whatsappQuickMessagesUI.js" type="module"></script>
+  <script src="js/whatsappQuickMessagesAutocomplete.js" defer></script>
+  <script src="js/advanced/csvImportValidatorUI.js" type="module"></script>
+  <script src="js/agenciasService.js" type="module"></script>
+  <script src="js/agenciasUI.js" type="module"></script>
+  <script src="js/cartoriosService.js" type="module"></script>
+  <script src="js/cartoriosUI.js" type="module"></script>
+  <script type="module" src="js/main.js"></script>
+  <script>
+    window.__APP_BUILD__ = '2026-04-24.18-40-27';
+  </script>
+  <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+</body>
+</html>
+

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aprovação - Sistema Gestor de Processos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/modal-standard.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/themeInit.js" defer></script>
+</head>
+<body>
+  <div id="sidebar-shell-mount"></div>
+  <script src="js/sidebarShell.js"></script>
+  <script>
+    window.SidebarShell.render({
+      mountId: 'sidebar-shell-mount',
+      mode: 'standalone',
+      activePage: 'aprovacao'
+    });
+  </script>
+
+  <main id="main-content">
+    <div id="page-aprovacao" class="page active">
+      <header class="aprovacao-header d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-1"><i class="bi bi-check-circle text-primary me-2"></i>Análise de Aprovação</h2>
+          <p class="text-muted mb-0">Gerencie análises de crédito e aprovações de clientes</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button id="aprovacao-refresh-btn" class="btn btn-outline-primary btn-sm" title="Atualizar dados">
+            <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+          </button>
+          <a class="btn btn-outline-info btn-sm admin-only" href="relatorios.html">
+            <i class="bi bi-trophy me-1"></i>Ranking Analistas
+          </a>
+          <button id="aprovacao-intake-link-btn" class="btn btn-outline-primary btn-sm" title="Gerar link público de solicitação">
+            <i class="bi bi-link-45deg me-1"></i>Link Solicitação
+          </button>
+          <button id="aprovacao-solicitacoes-btn" class="btn btn-outline-warning btn-sm" title="Abrir solicitações recebidas por canais digitais">
+            <i class="bi bi-inbox me-1"></i>Solicitações de Análise
+          </button>
+          <button id="aprovacao-add-btn" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-circle me-1"></i>Nova Análise
+          </button>
+          <div class="btn-group">
+            <button id="aprovacao-export-btn" class="btn btn-success btn-sm">
+              <i class="bi bi-download me-1"></i>Exportar
+            </button>
+            <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" id="aprovacao-export-dropdown">
+                <span class="visually-hidden">Opções de exportação</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#" id="aprovacao-export-csv"><i class="bi bi-filetype-csv me-2"></i>Exportar CSV</a></li>
+              <li><a class="dropdown-item" href="#" id="aprovacao-import-csv"><i class="bi bi-upload me-2"></i>Importar CSV</a></li>
+            </ul>
+          </div>
+          <button id="aprovacao-filters-btn" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-funnel me-1"></i>Filtros
+          </button>
+        </div>
+      </header>
+
+      <section class="row g-3 mb-4" id="aprovacao-kpis">
+        <div class="col-md-3 col-sm-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <p class="text-muted small mb-1">Total de Análises</p>
+                  <h3 id="kpi-total-analises" class="mb-0">0</h3>
+                </div>
+                <div class="bg-primary bg-opacity-10 rounded p-3">
+                  <i class="bi bi-file-text text-primary fs-4"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <p class="text-muted small mb-1">Aprovados</p>
+                  <h3 id="kpi-aprovados" class="mb-0 text-success">0</h3>
+                </div>
+                <div class="bg-success bg-opacity-10 rounded p-3">
+                  <i class="bi bi-check-circle text-success fs-4"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <p class="text-muted small mb-1">Reprovados</p>
+                  <h3 id="kpi-reprovados" class="mb-0 text-danger">0</h3>
+                </div>
+                <div class="bg-danger bg-opacity-10 rounded p-3">
+                  <i class="bi bi-x-circle text-danger fs-4"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <p class="text-muted small mb-1">Condicionados</p>
+                  <h3 id="kpi-condicionados" class="mb-0 text-warning">0</h3>
+                </div>
+                <div class="bg-warning bg-opacity-10 rounded p-3">
+                  <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <p class="text-muted small mb-1">Taxa de Conversão</p>
+                  <h3 id="kpi-conversao-rate" class="mb-0 text-info">--</h3>
+                  <small id="kpi-conversao-detail" class="text-muted">Aguardando cálculo</small>
+                </div>
+                <div class="bg-info bg-opacity-10 rounded p-3">
+                  <i class="bi bi-diagram-3 text-info fs-4"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm mb-4">
+        <div class="card-body pb-0">
+          <div class="row align-items-center mb-3">
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" id="aprovacao-search-input" class="form-control" placeholder="Buscar por nome, CPF, empreendimento...">
+                <button class="btn btn-outline-secondary" type="button" id="aprovacao-search-clear" title="Limpar busca">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6 text-md-end mt-2 mt-md-0">
+              <span id="aprovacao-results-count" class="text-muted small">0 registros</span>
+            </div>
+          </div>
+
+          <ul class="nav nav-tabs" id="aprovacao-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" data-filter="todas" type="button" role="tab">
+                Todas
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-filter="APROVADO" type="button" role="tab">
+                <i class="bi bi-check-circle text-success me-1"></i>Aprovadas
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-filter="REPROVADO" type="button" role="tab">
+                <i class="bi bi-x-circle text-danger me-1"></i>Reprovadas
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-filter="CONDICIONADO" type="button" role="tab">
+                <i class="bi bi-exclamation-triangle text-warning me-1"></i>Condicionadas
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-filter="pendentes-conversao" type="button" role="tab">
+                <i class="bi bi-arrow-right-circle text-info me-1"></i>Pendentes de Conversão
+              </button>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm aprovacao-results-section">
+        <div class="card-body p-0 aprovacao-results-body">
+          <div class="table-responsive aprovacao-table-scroll">
+            <table class="table table-hover align-middle mb-0" id="aprovacao-table">
+              <colgroup>
+                <col class="aprovacao-col-data-entrada">
+                <col class="aprovacao-col-cliente">
+                <col class="aprovacao-col-cpf">
+                <col class="aprovacao-col-empreendimento">
+                <col class="aprovacao-col-construtora">
+                <col class="aprovacao-col-situacao">
+                <col class="aprovacao-col-data-aprovacao">
+                <col class="aprovacao-col-analista">
+                <col class="aprovacao-col-acoes">
+              </colgroup>
+              <thead class="table-light aprovacao-table-head">
+                <tr>
+                  <th scope="col" class="sortable" data-sort="dataEntrada">Data Entrada <i class="bi bi-chevron-expand"></i></th>
+                  <th scope="col" class="sortable" data-sort="nomeClientePrincipal">Cliente <i class="bi bi-chevron-expand"></i></th>
+                  <th scope="col">CPF</th>
+                  <th scope="col" class="sortable" data-sort="empreendimento">Empreendimento <i class="bi bi-chevron-expand"></i></th>
+                  <th scope="col" class="sortable" data-sort="construtora">Construtora <i class="bi bi-chevron-expand"></i></th>
+                  <th scope="col" class="sortable" data-sort="situacao">Situação <i class="bi bi-chevron-expand"></i></th>
+                  <th scope="col" class="sortable" data-sort="dataAprovacao">Data de Aprovação <i class="bi bi-chevron-expand"></i></th>
+                  <th scope="col" class="sortable" data-sort="analistaAprovacao">Analista <i class="bi bi-chevron-expand"></i></th>
+                  <th scope="col" class="text-end">Ações</th>
+                </tr>
+                <tr class="aprovacao-inline-filters">
+                  <th>
+                    <input
+                      type="date"
+                      class="form-control form-control-sm aprovacao-inline-filter"
+                      id="aprovacao-filter-data-entrada"
+                      data-inline-filter="dataEntrada"
+                      aria-label="Filtrar por data de entrada"
+                    >
+                  </th>
+                  <th></th>
+                  <th></th>
+                  <th>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm aprovacao-inline-filter"
+                      id="aprovacao-filter-empreendimento"
+                      data-inline-filter="empreendimento"
+                      placeholder="Filtrar..."
+                      aria-label="Filtrar por empreendimento"
+                    >
+                  </th>
+                  <th>
+                    <input
+                      type="text"
+                      class="form-control form-control-sm aprovacao-inline-filter"
+                      id="aprovacao-filter-construtora"
+                      data-inline-filter="construtora"
+                      placeholder="Filtrar..."
+                      aria-label="Filtrar por construtora"
+                    >
+                  </th>
+                  <th>
+                    <select
+                      class="form-select form-select-sm aprovacao-inline-filter"
+                      id="aprovacao-filter-situacao"
+                      data-inline-filter="situacao"
+                      aria-label="Filtrar por situação"
+                    >
+                      <option value="">Todas</option>
+                      <option value="APROVADO">Aprovado</option>
+                      <option value="REPROVADO">Reprovado</option>
+                      <option value="CONDICIONADO">Condicionado</option>
+                    </select>
+                  </th>
+                  <th>
+                    <input
+                      type="date"
+                      class="form-control form-control-sm aprovacao-inline-filter"
+                      id="aprovacao-filter-data-aprovacao"
+                      data-inline-filter="dataAprovacao"
+                      aria-label="Filtrar por data de aprovação"
+                    >
+                  </th>
+                  <th>
+                    <select
+                      class="form-select form-select-sm aprovacao-inline-filter"
+                      id="aprovacao-filter-analista"
+                      data-inline-filter="analista"
+                      aria-label="Filtrar por analista"
+                    >
+                      <option value="">Todos</option>
+                    </select>
+                  </th>
+                  <th class="text-end">
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary btn-sm"
+                      id="aprovacao-inline-filters-clear"
+                      title="Limpar filtros inline"
+                    >
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="aprovacao-table-body">
+                <tr id="aprovacao-loading-row">
+                  <td colspan="9" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="text-muted mt-2 mb-0">Carregando aprovações...</p>
+                  </td>
+                </tr>
+                <tr id="aprovacao-empty-row" class="d-none">
+                  <td colspan="9" class="text-center py-5">
+                    <i class="bi bi-inbox text-muted icon-xl"></i>
+                    <p class="text-muted mt-2 mb-0">Nenhuma aprovação encontrada</p>
+                    <button class="btn btn-primary btn-sm mt-3" id="aprovacao-add-empty-btn">
+                      <i class="bi bi-plus-circle me-1"></i>Cadastrar Nova Análise
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center aprovacao-results-footer">
+          <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted">Itens por página:</span>
+            <select id="aprovacao-page-size" class="form-select form-select-sm w-auto">
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div id="aprovacao-pagination" class="d-flex gap-2 align-items-center">
+            <button id="aprovacao-prev-btn" class="btn btn-outline-primary btn-sm" disabled>
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <span id="aprovacao-page-info" class="small text-muted">Página 1</span>
+            <button id="aprovacao-next-btn" class="btn btn-outline-primary btn-sm" disabled>
+              Próximo <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="notification" class="notification"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="js/pdfjsInit.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-check-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="js/debug.js" defer></script>
+  <script src="js/standaloneSidebar.js" defer></script>
+  <script type="module" src="js/uiHelpers.js"></script>
+  <script type="module" src="js/pages/aprovacaoPageEntry.js"></script>
+  <script>
+    window.__APP_BUILD__ = '2026-04-24.18-40-27';
+  </script>
+  <script src="js/swRegistration.js?v=2026-04-24.18-40-27" defer></script>
+</body>
+</html>
+

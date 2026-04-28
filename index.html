@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema Gestor de Processos</title>
+    <script>
+      (function redirectLegacyEntryPoint() {
+        const legacyHash = String(window.location.hash || '').replace(/^#/, '').trim().toLowerCase();
+        const target = legacyHash === 'processos'
+          ? 'processos.html'
+          : legacyHash === 'aprovacao'
+            ? 'aprovacao.html'
+            : legacyHash === 'configuracoes'
+              ? 'configuracoes.html'
+              : legacyHash === 'relatorios'
+                ? 'relatorios.html'
+                : legacyHash === 'ferramentas'
+                  ? 'ferramentas.html'
+                  : legacyHash === 'agenda'
+                    ? 'agenda.html'
+                    : legacyHash === 'whatsapp'
+                      ? 'whatsapp.html'
+                      : legacyHash === 'perfil'
+                        ? 'profile.html'
+                        : legacyHash === 'arquivados'
+                          ? 'arquivados.html'
+                          : 'dashboard.html';
+        const query = window.location.search || '';
+        window.location.replace(`${target}${query}`);
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript>
+      Redirecionando para <a href="dashboard.html">dashboard.html</a>...
+    </noscript>
+  </body>
+</html>
+
