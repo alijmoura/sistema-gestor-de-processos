@@ -17,6 +17,10 @@ const RESERVED_SUBDOMAINS = new Set([
   'support',
   'www'
 ]);
+const ADMIN_HOSTS = new Set([
+  'admin.ajsmtech.com',
+  'gestor.ajsmtech.com'
+]);
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 const TENANT_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -43,6 +47,11 @@ function getConfiguredPrimaryDomain() {
 
 function isLocalHost(hostname = window.location.hostname) {
   return LOCAL_HOSTS.has(String(hostname || '').toLowerCase());
+}
+
+export function isAdminHost(hostname = window.location.hostname) {
+  const host = String(hostname || '').split(':')[0].toLowerCase();
+  return ADMIN_HOSTS.has(host);
 }
 
 function readQueryTenantSlug() {
@@ -103,6 +112,10 @@ function writeCachedTenant(slug, value) {
 export function getTenantSlugFromHostname(hostname = window.location.hostname) {
   const host = String(hostname || '').split(':')[0].toLowerCase();
 
+  if (isAdminHost(host)) {
+    return '';
+  }
+
   if (isLocalHost(host)) {
     return readQueryTenantSlug() || readStoredTenantSlug();
   }
@@ -131,7 +144,7 @@ async function loadTenantBySlug(slug) {
   const snapshot = await db
     .collection('empresas')
     .where('slug', '==', normalizedSlug)
-    .where('status', 'in', ['ativo', 'trial', 'pagamento_pendente'])
+    .where('status', 'in', ['ativo', 'trial', 'pagamento_pendente', 'suspenso'])
     .limit(1)
     .get();
 
@@ -210,6 +223,17 @@ async function loadMembership(user, tenantId) {
 }
 
 export async function resolveTenantContext({ user } = {}) {
+  if (isAdminHost()) {
+    currentTenantContext = null;
+    window.currentTenant = null;
+    window.currentTenantContext = null;
+    window.appState = window.appState || {};
+    window.appState.currentTenant = null;
+    window.appState.currentTenantContext = null;
+    window.appState.currentEmpresaId = '';
+    return null;
+  }
+
   const slug = getTenantSlugFromHostname();
   const tenant = slug ? await loadTenantBySlug(slug) : await loadDefaultTenantForUser(user);
 
@@ -238,6 +262,11 @@ export async function resolveTenantContext({ user } = {}) {
     isSuperAdmin
   };
 
+  if (tenant.status === 'suspenso' || tenant.status === 'cancelado') {
+    const billingStatus = tenant?.assinatura?.status || tenant.status;
+    throw new Error(`Empresa indisponivel. Status: ${billingStatus}.`);
+  }
+
   currentTenantContext = context;
   if (context.slug) {
     writeStoredTenantSlug(context.slug);
@@ -262,6 +291,14 @@ export function getCurrentTenantId() {
   return getCurrentTenantContext()?.tenantId || '';
 }
 
+export function requireCurrentTenantId() {
+  const tenantId = getCurrentTenantId();
+  if (!tenantId) {
+    throw new Error('Empresa atual nao foi resolvida para esta operacao.');
+  }
+  return tenantId;
+}
+
 export function withTenantData(data = {}) {
   const tenantId = getCurrentTenantId();
   if (!tenantId) return { ...data };
@@ -278,11 +315,18 @@ export function tenantQuery(collectionRef) {
   return tenantId ? collectionRef.where('empresaId', '==', tenantId) : collectionRef;
 }
 
+export function tenantCollection(db, collectionName) {
+  return tenantQuery(db.collection(collectionName));
+}
+
 export default {
   getCurrentTenantContext,
   getCurrentTenantId,
   getTenantSlugFromHostname,
+  isAdminHost,
+  requireCurrentTenantId,
   resolveTenantContext,
+  tenantCollection,
   tenantQuery,
   withTenantData
 };

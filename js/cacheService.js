@@ -455,6 +455,14 @@ class FirestoreCacheService {
     );
   }
 
+  scopeKey(key) {
+    const tenantId = window.currentTenantContext?.tenantId || window.appState?.currentEmpresaId || '';
+    if (!tenantId || String(key).startsWith(`tenant:${tenantId}:`)) {
+      return key;
+    }
+    return `tenant:${tenantId}:${key}`;
+  }
+
   /**
    * Obtém dados do cache ou executa função de busca
    * @param {string} key - Chave única para o cache
@@ -464,6 +472,7 @@ class FirestoreCacheService {
    * @returns {Promise<any>} Dados do cache ou da função de busca
    */
   async get(key, fetchFunction, type = 'contracts', forceRefresh = false) {
+    key = this.scopeKey(key);
     if (!this.isEnabled || forceRefresh) {
       this.missCount++;
       this.recordCacheMetric(false);
@@ -561,6 +570,7 @@ class FirestoreCacheService {
    * @param {string} type - Tipo de dados
    */
   set(key, data, type = 'contracts') {
+    key = this.scopeKey(key);
     if (!this.isEnabled) return;
     
     const timestamp = Date.now();
@@ -720,6 +730,7 @@ class FirestoreCacheService {
    * @param {string} key - Chave para remover
    */
   invalidate(key) {
+    key = this.scopeKey(key);
     const deleted = this.cache.delete(key);
     if (deleted) {
       this.log(` Cache invalidado (memória): ${key}`);

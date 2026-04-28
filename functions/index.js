@@ -1156,6 +1156,108 @@ function secureOnCall(options, handler) {
   });
 }
 
+const SAAS_PRIMARY_DOMAIN = process.env.SAAS_PRIMARY_DOMAIN || "ajsmtech.com";
+const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN || "";
+const MERCADO_PAGO_WEBHOOK_SECRET = process.env.MERCADO_PAGO_WEBHOOK_SECRET || "";
+const EMPRESA_STATUS_VALUES = new Set(["ativo", "trial", "pagamento_pendente", "suspenso", "cancelado"]);
+const EMPRESA_PLAN_VALUES = new Set(["starter", "professional", "enterprise"]);
+const EMPRESA_BILLING_STATUS_VALUES = new Set(["manual", "pending", "active", "overdue", "cancelled", "paid", "rejected"]);
+const TENANT_ADMIN_ROLES = new Set(["empresa_admin", "admin", "super_admin"]);
+
+function isGlobalAdmin(authContext) {
+  return authContext?.token?.admin === true || authContext?.token?.super_admin === true;
+}
+
+function assertGlobalAdmin(request) {
+  if (!request.auth?.uid || !isGlobalAdmin(request.auth)) {
+    throw new HttpsError("permission-denied", "Apenas super administradores podem executar esta operacao.");
+  }
+}
+
+function normalizeTenantSlug(value = "") {
+  return sanitizeStringValue(value, 90)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 63);
+}
+
+function normalizeEmpresaId(value = "") {
+  return normalizeTenantSlug(value);
+}
+
+function normalizeEmpresaPayload(data = {}) {
+  const nome = sanitizeStringValue(data.nome, 120);
+  const slug = normalizeTenantSlug(data.slug || nome);
+  const empresaId = normalizeEmpresaId(data.empresaId || slug);
+  if (!empresaId || !slug || !nome) {
+    throw new HttpsError("invalid-argument", "Empresa precisa de nome, slug e identificador validos.");
+  }
+
+  const status = EMPRESA_STATUS_VALUES.has(data.status) ? data.status : "trial";
+  const plano = EMPRESA_PLAN_VALUES.has(data.plano) ? data.plano : "professional";
+  const limites = data.limites && typeof data.limites === "object" ? data.limites : {};
+  const assinatura = data.assinatura && typeof data.assinatura === "object" ? data.assinatura : {};
+  const billingStatus = EMPRESA_BILLING_STATUS_VALUES.has(assinatura.status) ? assinatura.status : "manual";
+
+  return {
+    empresaId,
+    nome,
+    slug,
+    dominio: sanitizeStringValue(data.dominio, 180) || `${slug}.${SAAS_PRIMARY_DOMAIN}`,
+    status,
+    plano,
+    limites: {
+      usuarios: Math.max(1, Number(limites.usuarios) || 10),
+      processos: Math.max(1, Number(limites.processos) || 5000),
+      whatsapp: limites.whatsapp !== false
+    },
+    assinatura: {
+      provider: "mercado_pago",
+      status: billingStatus,
+      mercadoPagoPreferenceId: sanitizeStringValue(assinatura.mercadoPagoPreferenceId, 120) || null,
+      mercadoPagoPaymentId: sanitizeStringValue(assinatura.mercadoPagoPaymentId, 120) || null,
+      updatedAt: new Date()
+    }
+  };
+}
+
+async function getTenantMembership(uid, empresaId, db = getFirestore()) {
+  const normalizedUid = sanitizeStringValue(uid, 128);
+  const normalizedEmpresaId = normalizeEmpresaId(empresaId);
+  if (!normalizedUid || !normalizedEmpresaId) return null;
+
+  const snap = await db.collection("user_tenants").doc(`${normalizedUid}_${normalizedEmpresaId}`).get();
+  return snap.exists ? { id: snap.id, ...snap.data() } : null;
+}
+
+async function assertTenantAdminOrGlobalAdmin(request, empresaId, db = getFirestore()) {
+  if (isGlobalAdmin(request.auth)) return;
+  const membership = await getTenantMembership(request.auth?.uid, empresaId, db);
+  if (!membership || membership.status !== "ativo" || !TENANT_ADMIN_ROLES.has(membership.role)) {
+    throw new HttpsError("permission-denied", "Usuario sem permissao administrativa para esta empresa.");
+  }
+}
+
+async function resolveUidByEmail(email) {
+  const normalizedEmail = normalizeEmailValue(email);
+  if (!normalizedEmail) {
+    throw new HttpsError("invalid-argument", "E-mail invalido.");
+  }
+
+  try {
+    const user = await getAuth().getUserByEmail(normalizedEmail);
+    return { uid: user.uid, email: normalizedEmail };
+  } catch (error) {
+    if (error?.code === "auth/user-not-found") {
+      throw new HttpsError("not-found", "Usuario nao encontrado no Firebase Auth.");
+    }
+    throw error;
+  }
+}
+
 /** ===================== GESTÃO DE STATUS (ADMIN) =====================
  * Coleção usada: statusConfig (docId = nome do status)
  * Campos padrão: { text, stage, order, nextSteps: string[], active, createdAt, createdBy, updatedAt, updatedBy }
@@ -7986,6 +8088,275 @@ exports.getReadMetrics = secureOnCall({ cors: true }, async (request) => {
   } catch (error) {
     logger.error(' Erro ao obter métricas de leituras:', error);
     throw new HttpsError('internal', `Erro ao obter métricas: ${error.message}`);
+  }
+});
+
+exports.createOrUpdateEmpresa = secureOnCall({ cors: true }, async (request) => {
+  assertGlobalAdmin(request);
+  const db = getFirestore();
+  const payload = normalizeEmpresaPayload(request.data || {});
+  const now = new Date();
+  const ref = db.collection("empresas").doc(payload.empresaId);
+  const existing = await ref.get();
+
+  if (!existing.exists) {
+    const slugConflict = await db.collection("empresas")
+      .where("slug", "==", payload.slug)
+      .limit(1)
+      .get();
+    if (!slugConflict.empty && slugConflict.docs[0].id !== payload.empresaId) {
+      throw new HttpsError("already-exists", "Slug ja esta em uso por outra empresa.");
+    }
+  }
+
+  await ref.set({
+    ...payload,
+    updatedAt: now,
+    updatedBy: request.auth.uid,
+    createdAt: existing.exists ? (existing.data()?.createdAt || now) : now,
+    createdBy: existing.exists ? (existing.data()?.createdBy || request.auth.uid) : request.auth.uid
+  }, { merge: true });
+
+  return { empresaId: payload.empresaId };
+});
+
+exports.listEmpresasAdmin = secureOnCall({ cors: true }, async (request) => {
+  assertGlobalAdmin(request);
+  const snapshot = await getFirestore()
+    .collection("empresas")
+    .orderBy("nome", "asc")
+    .limit(500)
+    .get();
+
+  return {
+    empresas: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  };
+});
+
+exports.linkUserToEmpresa = secureOnCall({ cors: true }, async (request) => {
+  assertGlobalAdmin(request);
+  const db = getFirestore();
+  const { uid, email } = request.data?.uid
+    ? { uid: sanitizeStringValue(request.data.uid, 128), email: normalizeEmailValue(request.data.email) || "" }
+    : await resolveUidByEmail(request.data?.email);
+  const empresaId = normalizeEmpresaId(request.data?.empresaId);
+  const role = sanitizeStringValue(request.data?.role || "viewer", 40).toLowerCase();
+
+  if (!uid || !empresaId) {
+    throw new HttpsError("invalid-argument", "Informe usuario e empresa.");
+  }
+
+  const empresaSnap = await db.collection("empresas").doc(empresaId).get();
+  if (!empresaSnap.exists) {
+    throw new HttpsError("not-found", "Empresa nao encontrada.");
+  }
+
+  const membershipRef = db.collection("user_tenants").doc(`${uid}_${empresaId}`);
+  const now = new Date();
+  await membershipRef.set({
+    uid,
+    email: email || null,
+    empresaId,
+    role,
+    status: "ativo",
+    updatedAt: now,
+    updatedBy: request.auth.uid,
+    createdAt: now,
+    createdBy: request.auth.uid
+  }, { merge: true });
+
+  await db.collection("users").doc(uid).set({
+    uid,
+    email: email || null,
+    empresaId,
+    tenantId: empresaId,
+    defaultTenantId: empresaId,
+    updatedAt: now,
+    updatedBy: request.auth.uid
+  }, { merge: true });
+
+  await syncUserPermissionRole(uid, {
+    db,
+    email,
+    role: role === "empresa_admin" ? "admin" : role,
+    createdBy: request.auth.uid,
+    now,
+    source: "saas_admin_link"
+  });
+
+  return { membershipId: membershipRef.id };
+});
+
+exports.getSaasAdminOverview = secureOnCall({ cors: true }, async (request) => {
+  assertGlobalAdmin(request);
+  const db = getFirestore();
+  const [empresasSnap, membershipsSnap] = await Promise.all([
+    db.collection("empresas").limit(1000).get(),
+    db.collection("user_tenants").limit(5000).get()
+  ]);
+
+  let ativasOuTrial = 0;
+  let suspensas = 0;
+  empresasSnap.forEach((doc) => {
+    const status = doc.data()?.status;
+    if (status === "ativo" || status === "trial") ativasOuTrial += 1;
+    if (status === "suspenso" || status === "cancelado") suspensas += 1;
+  });
+
+  return {
+    totalEmpresas: empresasSnap.size,
+    ativasOuTrial,
+    suspensas,
+    totalVinculos: membershipsSnap.size
+  };
+});
+
+exports.createMercadoPagoCheckout = secureOnCall({ cors: true }, async (request) => {
+  assertGlobalAdmin(request);
+  if (!MERCADO_PAGO_ACCESS_TOKEN) {
+    throw new HttpsError("failed-precondition", "Configure MERCADO_PAGO_ACCESS_TOKEN nas Functions.");
+  }
+
+  const db = getFirestore();
+  const empresaId = normalizeEmpresaId(request.data?.empresaId);
+  const amount = Number(request.data?.amount);
+  if (!empresaId || !Number.isFinite(amount) || amount <= 0) {
+    throw new HttpsError("invalid-argument", "Informe empresaId e valor da cobranca.");
+  }
+
+  const empresaRef = db.collection("empresas").doc(empresaId);
+  const empresaSnap = await empresaRef.get();
+  if (!empresaSnap.exists) {
+    throw new HttpsError("not-found", "Empresa nao encontrada.");
+  }
+
+  const empresa = empresaSnap.data() || {};
+  const preferencePayload = {
+    items: [{
+      title: `Assinatura ${empresa.nome || empresaId}`,
+      quantity: 1,
+      unit_price: amount,
+      currency_id: "BRL"
+    }],
+    metadata: {
+      empresaId,
+      source: "gestor_saas_admin"
+    },
+    external_reference: empresaId,
+    notification_url: request.data?.notificationUrl || null,
+    back_urls: {
+      success: request.data?.successUrl || `https://admin.${SAAS_PRIMARY_DOMAIN}/admin.html`,
+      pending: request.data?.pendingUrl || `https://admin.${SAAS_PRIMARY_DOMAIN}/admin.html`,
+      failure: request.data?.failureUrl || `https://admin.${SAAS_PRIMARY_DOMAIN}/admin.html`
+    },
+    auto_return: "approved"
+  };
+
+  Object.keys(preferencePayload).forEach((key) => {
+    if (preferencePayload[key] === null) delete preferencePayload[key];
+  });
+
+  const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(preferencePayload)
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    logger.error("Erro Mercado Pago preference", { status: response.status, body });
+    throw new HttpsError("internal", "Falha ao criar checkout Mercado Pago.");
+  }
+
+  await empresaRef.set({
+    assinatura: {
+      provider: "mercado_pago",
+      status: "pending",
+      valor: amount,
+      mercadoPagoPreferenceId: body.id || null,
+      checkoutUrl: body.init_point || body.sandbox_init_point || null,
+      updatedAt: new Date()
+    },
+    updatedAt: new Date(),
+    updatedBy: request.auth.uid
+  }, { merge: true });
+
+  return {
+    preferenceId: body.id,
+    initPoint: body.init_point || body.sandbox_init_point || null
+  };
+});
+
+exports.mercadoPagoWebhook = onRequest({ cors: true }, async (req, res) => {
+  if (req.method !== "POST") {
+    res.status(405).send("Method not allowed");
+    return;
+  }
+
+  if (MERCADO_PAGO_WEBHOOK_SECRET) {
+    const provided = req.get("x-webhook-secret") || req.query.secret || "";
+    if (provided !== MERCADO_PAGO_WEBHOOK_SECRET) {
+      res.status(403).send("Forbidden");
+      return;
+    }
+  }
+
+  const paymentId = req.body?.data?.id || req.body?.id || req.query["data.id"];
+  if (!paymentId || !MERCADO_PAGO_ACCESS_TOKEN) {
+    res.status(202).json({ ok: true, ignored: true });
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(paymentId)}`, {
+      headers: { "Authorization": `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}` }
+    });
+    const payment = await response.json();
+    if (!response.ok) {
+      logger.error("Falha ao consultar pagamento Mercado Pago", { paymentId, status: response.status, payment });
+      res.status(202).json({ ok: true, pendingLookup: true });
+      return;
+    }
+
+    const empresaId = normalizeEmpresaId(payment?.metadata?.empresa_id || payment?.metadata?.empresaId || payment?.external_reference);
+    if (!empresaId) {
+      res.status(202).json({ ok: true, ignored: true });
+      return;
+    }
+
+    const statusMap = {
+      approved: "active",
+      pending: "pending",
+      in_process: "pending",
+      rejected: "rejected",
+      cancelled: "cancelled",
+      refunded: "cancelled",
+      charged_back: "overdue"
+    };
+    const billingStatus = statusMap[payment.status] || "pending";
+    const companyStatus = billingStatus === "active" ? "ativo" : billingStatus === "overdue" ? "pagamento_pendente" : null;
+    const update = {
+      assinatura: {
+        provider: "mercado_pago",
+        status: billingStatus,
+        mercadoPagoPaymentId: String(payment.id || paymentId),
+        mercadoPagoPreferenceId: payment.preference_id || null,
+        valor: Number(payment.transaction_amount) || null,
+        paidAt: payment.date_approved ? new Date(payment.date_approved) : null,
+        updatedAt: new Date()
+      },
+      updatedAt: new Date(),
+      updatedBy: "mercadoPagoWebhook"
+    };
+    if (companyStatus) update.status = companyStatus;
+
+    await getFirestore().collection("empresas").doc(empresaId).set(update, { merge: true });
+    res.json({ ok: true });
+  } catch (error) {
+    logger.error("Erro no webhook Mercado Pago", { message: error.message || String(error) });
+    res.status(500).json({ ok: false });
   }
 });
 

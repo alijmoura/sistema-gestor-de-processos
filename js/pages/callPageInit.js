@@ -1,26 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  updateDoc,
-  onSnapshot,
-  collection,
-  addDoc,
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-// Firebase config (mesmo do projeto)
-const firebaseConfig = {
-  apiKey: "INSIRA_SUA_FIREBASE_API_KEY",
-  authDomain: "gestor-de-contratos-6feb1.firebaseapp.com",
-  projectId: "gestor-de-contratos-6feb1",
-  storageBucket: "gestor-de-contratos-6feb1.firebasestorage.app",
-  messagingSenderId: "854671993933",
-  appId: "1:854671993933:web:ad98a1e1d56dda38db3c96",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { db } from '../auth.js';
 
 // ICE Servers (mesma config do whatsappCalls.js)
 const ICE_SERVERS = {
@@ -62,10 +40,10 @@ if (!callId) {
 async function initCall() {
   try {
     // Buscar dados da chamada
-    const callRef = doc(db, 'whatsappCalls', callId);
-    const callSnap = await getDoc(callRef);
+    const callRef = db.collection('whatsappCalls').doc(callId);
+    const callSnap = await callRef.get();
 
-    if (!callSnap.exists()) {
+    if (!callSnap.exists) {
       showError('Chamada não encontrada');
       return;
     }
@@ -126,7 +104,7 @@ async function answerCall(callData) {
     // ICE candidates
     peerConnection.onicecandidate = async (event) => {
       if (event.candidate) {
-        await addDoc(collection(db, 'whatsappCalls', callId, 'iceCandidates'), {
+        await db.collection('whatsappCalls').doc(callId).collection('iceCandidates').add({
           candidate: event.candidate.toJSON(),
           direction: 'incoming',
           createdAt: new Date(),
@@ -149,8 +127,8 @@ async function answerCall(callData) {
       await peerConnection.setLocalDescription(answer);
 
       // Salvar resposta no Firestore
-      const callRef = doc(db, 'whatsappCalls', callId);
-      await updateDoc(callRef, {
+      const callRef = db.collection('whatsappCalls').doc(callId);
+      await callRef.update({
         answer: {
           type: answer.type,
           sdp: answer.sdp,
@@ -160,7 +138,7 @@ async function answerCall(callData) {
       });
 
       // Ouvir ICE candidates do outro peer
-      onSnapshot(collection(db, 'whatsappCalls', callId, 'iceCandidates'), (snapshot) => {
+      db.collection('whatsappCalls').doc(callId).collection('iceCandidates').onSnapshot((snapshot) => {
         snapshot.docChanges().forEach(async (change) => {
           if (change.type === 'added') {
             const data = change.doc.data();
@@ -271,10 +249,10 @@ async function endCall() {
 
     // Atualizar Firestore
     if (callId) {
-      const callRef = doc(db, 'whatsappCalls', callId);
+      const callRef = db.collection('whatsappCalls').doc(callId);
       const duration = callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0;
 
-      await updateDoc(callRef, {
+      await callRef.update({
         status: 'ended',
         endedAt: new Date(),
         duration,

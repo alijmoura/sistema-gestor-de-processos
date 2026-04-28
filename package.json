@@ -19,6 +19,8 @@
     "release:deploy:hosting": "node scripts/release.js deploy --target=hosting",
     "release:deploy:backend": "node scripts/release.js deploy --target=backend",
     "release:rebuild:aprovacoes": "node scripts/rebuild-aprovacao-aggregates.js",
+    "saas:migrate:dry": "node scripts/migrate-saas-tenant.js --dry-run",
+    "saas:migrate": "node scripts/migrate-saas-tenant.js --tenant=ajsmtech-demo",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:hosting:fresh": "npm run release:deploy:hosting",
     "deploy:functions": "firebase deploy --only functions",

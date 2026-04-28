@@ -22,7 +22,7 @@ import {
   getConsultaKeyState,
 } from "./consultaKeyService.js";
 import { activityLogService } from "./activityLogService.js";
-import { getCurrentTenantId, withTenantData } from "./tenantService.js";
+import { getCurrentTenantId, tenantQuery, withTenantData } from "./tenantService.js";
 
 const DATE_FIELDS_SET = new Set(
   DATE_FIELDS_IMPORT.map((field) => String(field || "").toLowerCase())
@@ -891,7 +891,7 @@ export async function getContractsPage(options = {}) {
  */
 async function getContractsPageOptimized(options) {
   // Prepara query base
-  let baseQuery = contractsCollection;
+  let baseQuery = tenantQuery(contractsCollection);
   let hasInequalityFilter = false; // Flag para indicar se usamos filtro de desigualdade (not-in)
   let hasInFilter = false; // Flag para filtro 'in'
   
@@ -970,8 +970,8 @@ async function getContractsPageOptimized(options) {
  * Versão original mantida como fallback
  */
 async function getContractsPageOriginal(options) {
-  let query = contractsCollection;
-  let totalCountQuery = contractsCollection;
+  let query = tenantQuery(contractsCollection);
+  let totalCountQuery = tenantQuery(contractsCollection);
   let hasInequalityFilter = false; // Flag para indicar se usamos filtro de desigualdade (not-in)
 
   // --- 1. LÓGICA DE FILTRAGEM (WHERE) ---
@@ -1071,7 +1071,7 @@ export function listenForContracts(options = {}, callback) {
     includeArchived
   );
 
-  let query = contractsCollection;
+  let query = tenantQuery(contractsCollection);
   let hasInequalityFilter = false;
 
   // Aplica filtro de status no servidor quando possível para reduzir leituras
@@ -1209,7 +1209,7 @@ export async function getAllContracts(options = {}) {
     async () => {
       try {
         console.log(' [getAllContracts] Baixando contratos do Firestore com filtro de arquivados...');
-        let query = contractsCollection;
+        let query = tenantQuery(contractsCollection);
 
         if (canUseNotIn) {
           query = query.where('status', 'not-in', archivedStatuses);
@@ -1258,7 +1258,7 @@ export async function getArchivedContracts(options = {}) {
     async () => {
       try {
         console.log('[getArchivedContracts] Fetch direto do Firestore (archivedContracts)...');
-        let query = archivedContractsCollection.orderBy('archivedAt', 'desc');
+        let query = tenantQuery(archivedContractsCollection).orderBy('archivedAt', 'desc');
         if (limit) {
           query = query.limit(limit);
         }
@@ -1309,7 +1309,7 @@ export async function migrateArchivedContracts(options = {}) {
   let iterations = 0;
 
   while (true) {
-    const snap = await contractsCollection
+    const snap = await tenantQuery(contractsCollection)
       .where('status', 'in', statusesForQuery)
       .limit(batchSize)
       .get();
@@ -1492,7 +1492,7 @@ export async function listArchivedContractsFromStorage(options = {}) {
     } catch (error) {
       console.warn('[listArchivedContractsFromStorage] Fallback local ativado:', error?.message || error);
 
-      let query = archivedContractsCollection.orderBy('archivedAt', 'desc');
+      let query = tenantQuery(archivedContractsCollection).orderBy('archivedAt', 'desc');
       if (filters.status) {
         query = query.where('status', '==', filters.status);
       }
@@ -1617,7 +1617,7 @@ export async function getStorageArchiveStatistics() {
   return await cacheService.get(
     'contracts_archived_stats',
     async () => {
-      const query = archivedContractsCollection;
+      const query = tenantQuery(archivedContractsCollection);
       if (typeof query.count === 'function') {
         const snapshot = await query.count().get();
         return { total: snapshot.data().count || 0 };
@@ -2910,7 +2910,7 @@ export async function importContractsFromCSV(csvText, onProgress) {
   for (let i = 0; i < csvIds.length; i += ID_BATCH_SIZE) {
     const batchIds = csvIds.slice(i, i + ID_BATCH_SIZE).filter(id => id);
     if (batchIds.length > 0) {
-      const existingDocs = await contractsCollection
+      const existingDocs = await tenantQuery(contractsCollection)
         .where(firebase.firestore.FieldPath.documentId(), 'in', batchIds)
         .get();
       existingDocs.docs.forEach(doc => existingIds.add(doc.id));
@@ -3109,7 +3109,7 @@ export function listenForContractsUnfiltered(callback) {
     }
   );
 
-  const unsubscribe = contractsCollection.onSnapshot(
+  const unsubscribe = tenantQuery(contractsCollection).onSnapshot(
     optimizedCallback,
     (error) => {
       console.error("Erro ao ouvir contratos (sem filtro): ", error);
@@ -3917,7 +3917,7 @@ async function batchImportContractsSimplified(contracts) {
     const batchIds = csvIds.slice(i, i + ID_BATCH_SIZE);
     if (batchIds.length > 0) {
       try {
-        const existingDocs = await contractsCollection
+        const existingDocs = await tenantQuery(contractsCollection)
           .where(firebase.firestore.FieldPath.documentId(), 'in', batchIds)
           .get();
         existingDocs.docs.forEach(doc => existingIds.add(doc.id));
@@ -3942,7 +3942,7 @@ async function batchImportContractsSimplified(contracts) {
 
     batchContracts.forEach((contractData, index) => {
       // PRESERVA TODOS OS DADOS ORIGINAIS
-      const dataToSave = { ...contractData };
+      const dataToSave = withTenantData({ ...contractData });
       
       // Log de debug para primeiro lote
       if (batchIndex === 0 && index < 3) {
@@ -4215,7 +4215,7 @@ export async function batchImportContracts(contracts, errorLogs = []) {
       const batchIds = csvIds.slice(i, i + ID_BATCH_SIZE);
       if (batchIds.length > 0) {
         try {
-          const existingDocs = await contractsCollection
+          const existingDocs = await tenantQuery(contractsCollection)
             .where(firebase.firestore.FieldPath.documentId(), 'in', batchIds)
             .get();
           existingDocs.docs.forEach(doc => existingIds.add(doc.id));
@@ -4240,7 +4240,7 @@ export async function batchImportContracts(contracts, errorLogs = []) {
 
         batchContracts.forEach((contractData, index) => {
             // Remove os campos da IA e campos internos antes de salvar
-            const dataToSave = { ...contractData };
+            const dataToSave = withTenantData({ ...contractData });
             delete dataToSave.statusIA;
             delete dataToSave.notasIA;
             delete dataToSave._originalLine;
@@ -4436,7 +4436,7 @@ export async function getAllContratos() {
     try {
         console.log(' Obtendo todos os contratos para backup...');
         
-        const snapshot = await contractsCollection.get();
+        const snapshot = await tenantQuery(contractsCollection).get();
         const contratos = [];
         
         snapshot.forEach(doc => {
@@ -4967,14 +4967,14 @@ export async function deleteVendor(vendorId, force = false) {
     const vendorName = vendorData.name;
     
     // Verifica se há processos vinculados
-    const contractsSnap = await contractsCollection
+    const contractsSnap = await tenantQuery(contractsCollection)
       .where('vendedorConstrutora', '==', vendorName)
       .limit(1)
       .get();
     
     if (!contractsSnap.empty && !force) {
       // Conta total de processos
-      const countSnap = await contractsCollection
+      const countSnap = await tenantQuery(contractsCollection)
         .where('vendedorConstrutora', '==', vendorName)
         .get();
       return { 
@@ -5030,7 +5030,7 @@ export async function deleteEmpreendimento(vendorId, empreendimentoId, force = f
     
     // Verifica se há processos vinculados
     if (!force) {
-      const contractsSnap = await contractsCollection
+      const contractsSnap = await tenantQuery(contractsCollection)
         .where('vendedorConstrutora', '==', vendorName)
         .where('empreendimento', '==', empName)
         .limit(1)
@@ -5038,7 +5038,7 @@ export async function deleteEmpreendimento(vendorId, empreendimentoId, force = f
       
       if (!contractsSnap.empty) {
         // Conta total
-        const countSnap = await contractsCollection
+        const countSnap = await tenantQuery(contractsCollection)
           .where('vendedorConstrutora', '==', vendorName)
           .where('empreendimento', '==', empName)
           .get();
@@ -5304,7 +5304,7 @@ export async function contractExistsForUnit({ vendedorConstrutora, empreendiment
     console.warn('contractExistsForUnit falhou (pode exigir índice composto):', e.message);
     // fallback simples: tentar reduzir condições progressivamente (menos eficiente, usado só em caso de ausência de índice)
     try {
-      const snap = await contractsCollection
+      const snap = await tenantQuery(contractsCollection)
         .where('vendedorConstrutora','==', vendedorConstrutora)
         .where('empreendimento','==', empreendimento)
         .limit(50).get();
@@ -5338,7 +5338,7 @@ export async function syncVendorsFromContracts(options = {}) {
     console.log('[syncVendorsFromContracts] Iniciando sincronização completa...');
     
     // 1. Busca todos os contratos para extrair dados
-    const contractsSnap = await contractsCollection.get();
+    const contractsSnap = await tenantQuery(contractsCollection).get();
     console.log(`[syncVendorsFromContracts] ${contractsSnap.size} processos encontrados`);
     
     // Estrutura: vendorName (normalizado) -> { original: string, empreendimentos: Map }
@@ -5661,7 +5661,7 @@ export async function updateVendorNameInContracts(oldName, newName) {
     const newNameTrimmed = newName.trim();
     
     // Busca todos os contratos com a construtora antiga (exact match)
-    let snap = await contractsCollection
+    let snap = await tenantQuery(contractsCollection)
       .where('vendedorConstrutora', '==', oldNameTrimmed)
       .get();
     
@@ -5787,7 +5787,7 @@ export async function updateEmpreendimentoNameInContracts(vendorName, oldEmpName
     const newEmpTrimmed = newEmpName.trim();
     
     // Tenta busca exata primeiro
-    let snap = await contractsCollection
+    let snap = await tenantQuery(contractsCollection)
       .where('vendedorConstrutora', '==', vendorNameTrimmed)
       .where('empreendimento', '==', oldEmpTrimmed)
       .get();
@@ -5894,7 +5894,7 @@ export async function updateEmpreendimentoNameInContracts(vendorName, oldEmpName
 export async function detectDuplicateVendors() {
   try {
     // 1. Busca todos os contratos para contar por construtora
-    const contractsSnap = await contractsCollection.get();
+    const contractsSnap = await tenantQuery(contractsCollection).get();
     const vendorCounts = new Map(); // nome normalizado -> { variants: Map<original, count> }
     
     contractsSnap.docs.forEach(doc => {
@@ -5981,7 +5981,7 @@ export async function mergeVendors(targetName, sourceNames) {
   try {
     // 1. Atualiza todos os contratos das construtoras fonte para o nome alvo
     for (const sourceName of namesToMerge) {
-      const snap = await contractsCollection
+      const snap = await tenantQuery(contractsCollection)
         .where('vendedorConstrutora', '==', sourceName)
         .get();
       

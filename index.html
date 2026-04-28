@@ -6,6 +6,12 @@
     <title>Sistema Gestor de Processos</title>
     <script>
       (function redirectLegacyEntryPoint() {
+        const host = String(window.location.hostname || '').toLowerCase();
+        if ((host === 'admin.ajsmtech.com' || host === 'gestor.ajsmtech.com') && !window.location.pathname.endsWith('/admin.html')) {
+          window.location.replace(`admin.html${window.location.search || ''}`);
+          return;
+        }
+
         const legacyHash = String(window.location.hash || '').replace(/^#/, '').trim().toLowerCase();
         const target = legacyHash === 'processos'
           ? 'processos.html'

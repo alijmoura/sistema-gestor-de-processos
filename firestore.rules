@@ -5,17 +5,14 @@ service cloud.firestore {
     
     // ===================== FUNÇÕES AUXILIARES =====================
     
-    // Verifica se o usuário está autenticado
     function isAuthenticated() {
       return request.auth != null;
     }
-    
-    // Verifica se o usuário é admin
+
     function isAdmin() {
       return request.auth != null && request.auth.token.admin == true;
     }
-    
-    // Verifica se o usuário é o próprio
+
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
@@ -41,23 +38,41 @@ service cloud.firestore {
           && get(/databases/$(database)/documents/user_tenants/$(userTenantDocId(empresaId))).data.role in ["empresa_admin", "admin", "super_admin"]
         );
     }
-    
-    // Verifica se o usuário é um agente WhatsApp registrado
-    function isWhatsAppAgent() {
-      return isAuthenticated() && 
-             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.whatsapp.isAgent == true;
-    }
-    
-    // Verifica se o agente está atribuído ao chat
-    function isAssignedAgent(chatId) {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/chats/$(chatId)).data.agentId == request.auth.uid;
-    }
-    
-    // ===================== REGRAS EXISTENTES (mantidas) =====================
 
-    // ===================== SAAS / MULTIEMPRESA =====================
+    function hasTenantReadAccess() {
+      return resource.data.empresaId is string
+        && hasTenantAccess(resource.data.empresaId);
+    }
+
+    function hasTenantCreateAccess() {
+      return request.resource.data.empresaId is string
+        && request.resource.data.tenantId == request.resource.data.empresaId
+        && hasTenantAccess(request.resource.data.empresaId);
+    }
+
+    function hasTenantUpdateAccess() {
+      return resource.data.empresaId is string
+        && request.resource.data.empresaId == resource.data.empresaId
+        && request.resource.data.tenantId == resource.data.empresaId
+        && hasTenantAccess(resource.data.empresaId);
+    }
+
+    function isTenantDocAdmin() {
+      return resource.data.empresaId is string
+        && isTenantAdmin(resource.data.empresaId);
+    }
+
+    function parentTenantAccess(collectionName, docId) {
+      return exists(/databases/$(database)/documents/$(collectionName)/$(docId))
+        && get(/databases/$(database)/documents/$(collectionName)/$(docId)).data.empresaId is string
+        && hasTenantAccess(get(/databases/$(database)/documents/$(collectionName)/$(docId)).data.empresaId);
+    }
+
+    function parentTenantAdmin(collectionName, docId) {
+      return exists(/databases/$(database)/documents/$(collectionName)/$(docId))
+        && get(/databases/$(database)/documents/$(collectionName)/$(docId)).data.empresaId is string
+        && isTenantAdmin(get(/databases/$(database)/documents/$(collectionName)/$(docId)).data.empresaId);
+    }
 
     match /empresas/{empresaId} {
       allow read: if hasTenantAccess(empresaId);
@@ -92,33 +107,33 @@ service cloud.firestore {
     
     // Coleção de contratos
     match /contracts/{contractId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
-      allow delete: if isAdmin(); // ✅ APENAS ADMIN PODE EXCLUIR
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
       
       // Subcoleção de histórico do contrato
       match /historico/{historicoId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated();
-        allow update: if isAuthenticated();
-        allow delete: if isAdmin();
+        allow read: if parentTenantAccess("contracts", contractId);
+        allow create: if parentTenantAccess("contracts", contractId);
+        allow update: if parentTenantAccess("contracts", contractId);
+        allow delete: if parentTenantAdmin("contracts", contractId);
       }
       
       // Subcoleção de anexos do contrato
       match /anexos/{anexoId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated();
-        allow update: if isAuthenticated();
-        allow delete: if isAuthenticated() || isAdmin();
+        allow read: if parentTenantAccess("contracts", contractId);
+        allow create: if parentTenantAccess("contracts", contractId);
+        allow update: if parentTenantAccess("contracts", contractId);
+        allow delete: if parentTenantAccess("contracts", contractId);
       }
       
       // Subcoleção de erros (QA) do contrato
       match /erros/{erroId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated();
-        allow update: if isAdmin(); // Apenas admin pode avaliar (aprovar/rejeitar)
-        allow delete: if isAdmin()
+        allow read: if parentTenantAccess("contracts", contractId);
+        allow create: if parentTenantAccess("contracts", contractId);
+        allow update: if parentTenantAdmin("contracts", contractId);
+        allow delete: if parentTenantAdmin("contracts", contractId)
           || resource.data.criadoPor == request.auth.uid
           || resource.data.criadoPor == request.auth.token.email
           || resource.data.criadoPorEmail == request.auth.token.email
@@ -150,47 +165,52 @@ service cloud.firestore {
     }
     
     // Coleção de status (regras existentes - manter como está)
-    match /statusConfig/{statusId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /statusConfig/{docId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Coleção de status dinâmicos (nova regra)
-    match /status/{statusId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /status/{docId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Coleção de regras de status (validação de campos obrigatórios)
-    match /statusRules/{ruleId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /statusRules/{docId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Coleção de configurações gerais (Dashboard, etc.)
     match /settings/{settingId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Coleção de contratos arquivados
     match /archivedContracts/{contractId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated(); // Se necessário
-      allow update: if isAuthenticated(); // Se necessário
-      allow delete: if isAdmin();
-      
-      // Subcoleção de histórico
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
+
       match /historico/{historicoId} {
-        allow read: if isAuthenticated();
-        allow write: if isAdmin(); // Geralmente histórico é imutável ou gerado pelo sistema
+        allow read: if parentTenantAccess("archivedContracts", contractId);
+        allow write: if parentTenantAdmin("archivedContracts", contractId);
       }
-      
-      // Subcoleção de anexos
+
       match /anexos/{anexoId} {
-        allow read: if isAuthenticated();
-        // Permissões similares a contracts
-        allow write: if isAuthenticated(); 
+        allow read: if parentTenantAccess("archivedContracts", contractId);
+        allow write: if parentTenantAccess("archivedContracts", contractId);
       }
     }
 
@@ -211,45 +231,30 @@ service cloud.firestore {
 
     // Coleção de pendências
     match /pendencias/{pendenciaId} {
-      // Qualquer usuário autenticado pode ler pendências
-      allow read: if isAuthenticated();
-
-      // Criar: Qualquer usuário autenticado
-      allow create: if isAuthenticated();
-
-      // Atualizar: Qualquer usuário autenticado (editar, concluir, reabrir)
-      allow update: if isAuthenticated();
-
-      // Excluir: Qualquer usuário autenticado
-      allow delete: if isAuthenticated();
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin() || (isAuthenticated() && resource.data.createdBy == request.auth.uid);
     }
 
     // ===================== REGRAS APROVAÇÕES =====================
 
     // Coleção de aprovações de crédito
     match /aprovacoes/{aprovacaoId} {
-      // Leitura: Qualquer usuário autenticado pode ler aprovações
-      allow read: if isAuthenticated();
-
-      // Criar: Qualquer usuário autenticado pode criar aprovações
-      allow create: if isAuthenticated();
-
-      // Atualizar: Qualquer usuário autenticado pode atualizar
-      allow update: if isAuthenticated();
-
-      // Excluir: Admin ou criador da analise
-      allow delete: if isAdmin()
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin()
         || resource.data.criadoPor == request.auth.uid
         || resource.data.criadoPor == request.auth.token.email
         || resource.data.createdBy == request.auth.uid
         || resource.data.createdBy == request.auth.token.email;
-      
-      // Subcoleção de erros (QA) da aprovacao
+
       match /erros/{erroId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated();
-        allow update: if isAdmin(); // Apenas admin pode avaliar (aprovar/rejeitar)
-        allow delete: if isAdmin()
+        allow read: if parentTenantAccess("aprovacoes", aprovacaoId);
+        allow create: if parentTenantAccess("aprovacoes", aprovacaoId);
+        allow update: if parentTenantAdmin("aprovacoes", aprovacaoId);
+        allow delete: if parentTenantAdmin("aprovacoes", aprovacaoId)
           || resource.data.criadoPor == request.auth.uid
           || resource.data.criadoPor == request.auth.token.email
           || resource.data.criadoPorEmail == request.auth.token.email
@@ -264,154 +269,149 @@ service cloud.firestore {
     
     // Configuração WhatsApp
     match /whatsappConfig/settings {
-      allow read: if isAuthenticated();  // Todos podem ler configuração
-      allow write: if isAdmin();  // Apenas admin pode modificar
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Conversas WhatsApp
     match /chats/{chatId} {
-      // ✅ MODIFICADO: Leitura para todos autenticados (necessário para vincular contratos)
-      allow read: if isAuthenticated();
-      
-      // Criação: Usuários autenticados podem criar conversas
-      allow create: if isAuthenticated();
-      
-      // Atualização: Usuários autenticados podem atribuir/atualizar chats
-      allow update: if isAuthenticated();
-      
-      // Deleção: Apenas admin
-      allow delete: if isAdmin();
-      
-      // Mensagens da conversa (subcoleção)
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
+
       match /messages/{messageId} {
-        // ✅ MODIFICADO: Leitura para todos autenticados
-        allow read: if isAuthenticated();
-        
-        // Criação: Usuários autenticados podem criar mensagens
-        allow create: if isAuthenticated();
-        
-        // Atualização: Usuários autenticados podem atualizar (ex: marcar como lida)
-        allow update: if isAuthenticated();
-        
-        // Deleção: Apenas admin
-        allow delete: if isAdmin();
+        allow read: if parentTenantAccess("chats", chatId);
+        allow create: if parentTenantAccess("chats", chatId);
+        allow update: if parentTenantAccess("chats", chatId);
+        allow delete: if parentTenantAdmin("chats", chatId);
       }
     }
     
     // Mensagens rápidas (Quick Messages)
-    match /quickMessages/{messageId} {
-      // Leitura: Qualquer agente WhatsApp
-      allow read: if isWhatsAppAgent() || isAdmin();
-      
-      // Criação/Atualização: Qualquer agente pode criar suas mensagens
-      allow create: if isWhatsAppAgent() || isAdmin();
-      allow update: if isWhatsAppAgent() || isAdmin();
-      
-      // Deleção: Apenas quem criou ou admin
-      allow delete: if isAdmin() || 
-                      (isAuthenticated() && 
-                       resource.data.createdBy == request.auth.uid);
+    match /quickMessages/{quickMessageId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Filas por departamento (apenas leitura para agentes)
-    match /whatsappQueues/{queueId} {
-      allow read: if isWhatsAppAgent() || isAdmin();
-      allow write: if isAdmin(); // Apenas sistema gerencia filas
+    match /whatsappQueues/{whatsappQueueId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Tags do WhatsApp
-    match /whatsappTags/{tagId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
-      allow delete: if isAdmin() || 
-                      (isAuthenticated() && 
-                       resource.data.createdBy == request.auth.uid);
+    match /whatsappTags/{whatsappTagId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Números de telefone WhatsApp
-    match /whatsappPhones/{phoneId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /whatsappPhones/{whatsappPhoneId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Números de telefone WhatsApp (coleção correta)
-    match /whatsappPhoneNumbers/{phoneId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /whatsappPhoneNumbers/{whatsappPhoneNumberId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // ===================== REGRAS COLEÇÕES AUXILIARES =====================
     
     // Vendedores/Construtoras - Leitura para todos, escrita apenas admin
     match /vendors/{vendorId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Agências - Leitura para todos, escrita apenas admin
     match /agencias/{agenciaId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Cartórios - Leitura para todos, escrita apenas admin
     match /cartorios/{cartorioId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Workflows - Leitura para todos, escrita apenas admin
     match /workflows/{workflowId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Configurações do Dashboard - Leitura para todos, escrita apenas admin
-    match /dashboardConfig/{configId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /dashboardConfig/{docId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Configurações de SLA por status - Leitura para todos, escrita apenas admin
-    match /slaConfig/{configId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /slaConfig/{docId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Configurações de SLA por datas - Leitura para todos, escrita apenas admin
-    match /slaDateConfig/{configId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+    match /slaDateConfig/{docId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // Anexos de contratos - Baseado em permissões de contrato
     match /attachments/{attachmentId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if (isAuthenticated() && resource.data.uploadedBy == request.auth.uid) || isAdmin();
-      allow delete: if (isAuthenticated() && resource.data.uploadedBy == request.auth.uid) || isAdmin();
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // ===================== AGENDA / EVENTOS =====================
 
     // Coleção de eventos do calendário - Cada usuário gerencia seus próprios eventos
     match /events/{eventId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated();
-      allow delete: if isAuthenticated()
-                    && (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Tipos de agendamento - Cada usuário gerencia seus próprios tipos customizados
-    match /scheduleTypes/{typeId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated()
-                    && (resource.data.createdBy == request.auth.uid || isAdmin());
-      allow delete: if isAuthenticated()
-                    && (resource.data.createdBy == request.auth.uid || isAdmin());
+    match /scheduleTypes/{scheduleTypeId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
     
     // ===================== CHAT INTERNO ENTRE ANALISTAS =====================
@@ -488,101 +488,52 @@ service cloud.firestore {
     // ===================== SINCRONIZAÇÃO EM TEMPO REAL =====================
     
     // Coleção de notificações em tempo real (lightweight)
-    match /realtimeNotifications/{notificationId} {
-      // Qualquer usuário autenticado pode criar notificações
-      allow create: if isAuthenticated() 
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.timestamp is timestamp;
-      
-      // Qualquer usuário autenticado pode ler notificações
-      allow read: if isAuthenticated();
-      
-      // Apenas o criador ou admin pode deletar (limpeza automática)
-      allow delete: if isAuthenticated() 
-        && (resource.data.userId == request.auth.uid || isAdmin());
+    match /realtimeNotifications/{realtimeNotificationId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Notificações de delta para aprovações (somente backend grava)
-    match /realtimeAprovacaoNotifications/{notificationId} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if false;
+    match /realtimeAprovacaoNotifications/{realtimeAprovacaoNotificationId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Agregados diários de aprovações (somente leitura no cliente)
-    match /aprovacoesAggDaily/{dateKey} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if false;
+    match /aprovacoesAggDaily/{docId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Agregado global de aprovações (somente leitura no cliente)
     match /aprovacoesAggSummary/{docId} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if false;
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // Links de conversão aprovação -> processo materializados no backend
-    match /aprovacaoConversaoLinks/{processoId} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if false;
+    match /aprovacaoConversaoLinks/{aprovacaoConversaoLinkId} {
+      allow read: if hasTenantReadAccess();
+      allow create: if hasTenantCreateAccess();
+      allow update: if hasTenantUpdateAccess();
+      allow delete: if isTenantDocAdmin();
     }
 
     // ===================== LOGS DE ATIVIDADE =====================
     
     // Logs de atividade do sistema
     match /activity_logs/{activityId} {
-      allow read: if isAdmin()
-        || (isAuthenticated() && resource.data.userUid == request.auth.uid);
-      allow create: if isAuthenticated()
-        && request.resource.data.keys().hasOnly([
-          'actionType',
-          'description',
-          'relatedEntityId',
-          'extraData',
-          'timestamp',
-          'userName',
-          'userEmail',
-          'userUid',
-          'actorName',
-          'actorEmail',
-          'actorUid',
-          'module',
-          'page',
-          'entityType',
-          'entityLabel',
-          'oldValue',
-          'newValue',
-          'filename',
-          'rowCount',
-          'storagePath',
-          'storageDownloadUrl',
-          'mimeType',
-          'fileSize'
-        ])
-        && request.resource.data.actionType is string
-        && request.resource.data.description is string
-        && request.resource.data.timestamp is timestamp
-        && request.resource.data.timestamp == request.time
-        && request.resource.data.userName is string
-        && request.resource.data.userUid == request.auth.uid
-        && request.resource.data.userEmail == request.auth.token.email
-        && (!('actorName' in request.resource.data) || request.resource.data.actorName == null || request.resource.data.actorName is string)
-        && (!('actorEmail' in request.resource.data) || request.resource.data.actorEmail == null || request.resource.data.actorEmail is string)
-        && (!('actorUid' in request.resource.data) || request.resource.data.actorUid == null || request.resource.data.actorUid is string)
-        && (!('module' in request.resource.data) || request.resource.data.module == null || request.resource.data.module is string)
-        && (!('page' in request.resource.data) || request.resource.data.page == null || request.resource.data.page is string)
-        && (!('entityType' in request.resource.data) || request.resource.data.entityType == null || request.resource.data.entityType is string)
-        && (!('entityLabel' in request.resource.data) || request.resource.data.entityLabel == null || request.resource.data.entityLabel is string)
-        && (!('oldValue' in request.resource.data) || request.resource.data.oldValue == null || request.resource.data.oldValue is string)
-        && (!('newValue' in request.resource.data) || request.resource.data.newValue == null || request.resource.data.newValue is string)
-        && (!('filename' in request.resource.data) || request.resource.data.filename == null || request.resource.data.filename is string)
-        && (!('rowCount' in request.resource.data) || request.resource.data.rowCount == null || request.resource.data.rowCount is number)
-        && (!('storagePath' in request.resource.data) || request.resource.data.storagePath == null || request.resource.data.storagePath is string)
-        && (!('storageDownloadUrl' in request.resource.data) || request.resource.data.storageDownloadUrl == null || request.resource.data.storageDownloadUrl is string)
-        && (!('mimeType' in request.resource.data) || request.resource.data.mimeType == null || request.resource.data.mimeType is string)
-        && (!('fileSize' in request.resource.data) || request.resource.data.fileSize == null || request.resource.data.fileSize is number)
-        && (!('relatedEntityId' in request.resource.data) || request.resource.data.relatedEntityId == null || request.resource.data.relatedEntityId is string)
-        && (!('extraData' in request.resource.data) || request.resource.data.extraData is map);
-      allow update, delete: if isAdmin();
+      allow read: if isTenantDocAdmin() || (hasTenantReadAccess() && resource.data.userUid == request.auth.uid);
+      allow create: if hasTenantCreateAccess() && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if isTenantDocAdmin();
     }
 
     // ===================== REGRAS PADRÃO =====================

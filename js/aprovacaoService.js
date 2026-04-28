@@ -10,6 +10,7 @@ import permissionsService, { PERMISSION_MODULES, PERMISSION_ACTIONS, PERMISSION_
 import aprovacaoRealtimeSyncService from "./aprovacaoRealtimeSyncService.js";
 import realtimeSyncService from "./realtimeSyncService.js";
 import { activityLogService } from "./activityLogService.js";
+import { tenantQuery, withTenantData } from "./tenantService.js";
 
 // Constantes
 const COLLECTION_NAME = 'aprovacoes';
@@ -275,7 +276,7 @@ async function getDailyAggregationsByDateRange(dataInicio, dataFim) {
   const results = [];
   for (let i = 0; i < keys.length; i += 10) {
     const batchKeys = keys.slice(i, i + 10);
-    const snapshot = await db.collection(APROVACOES_AGG_DAILY_COLLECTION)
+    const snapshot = await tenantQuery(db.collection(APROVACOES_AGG_DAILY_COLLECTION))
       .where(firebase.firestore.FieldPath.documentId(), 'in', batchKeys)
       .get();
     snapshot.docs.forEach((doc) => results.push({ id: doc.id, ...doc.data() }));
@@ -303,7 +304,7 @@ async function getDailyAggregationsForStats(dataInicio, dataFim) {
         return getDailyAggregationsByDateRange(startDate, endDate);
       }
 
-      let query = db.collection(APROVACOES_AGG_DAILY_COLLECTION);
+      let query = tenantQuery(db.collection(APROVACOES_AGG_DAILY_COLLECTION));
 
       if (startDate) {
         query = query.where('date', '>=', formatDateKey(startDate));
@@ -435,7 +436,7 @@ export async function createAprovacao(data) {
     checklistAprovacao: data.checklistAprovacao || null
   };
 
-  const docRef = await aprovacaoCollection.add(aprovacaoData);
+  const docRef = await aprovacaoCollection.add(withTenantData(aprovacaoData));
 
   // Registra no feed global de atividades
   if (activityLogService?.logActivity) {
@@ -553,7 +554,7 @@ export async function updateAprovacao(id, data) {
     updateData.aiValidation = data.aiValidation;
   }
 
-  await aprovacaoCollection.doc(id).update(updateData);
+  await aprovacaoCollection.doc(id).update(withTenantData(updateData));
 
   // Invalida cache
   invalidateCache();
@@ -703,7 +704,7 @@ export async function listAprovacoes(options = {}) {
     : null;
 
   const fetchList = async () => {
-    let query = aprovacaoCollection;
+    let query = tenantQuery(aprovacaoCollection);
     const clientSidePredicates = [];
     const canProbeHasMore = normalizedPageSize < FIRESTORE_MAX_QUERY_LIMIT;
     const targetMatches = canProbeHasMore ? normalizedPageSize + 1 : normalizedPageSize;
@@ -1054,7 +1055,7 @@ export async function listAprovacaoAnalystCatalog(options = {}) {
       let exhausted = false;
 
       while (!exhausted) {
-        let query = aprovacaoCollection
+        let query = tenantQuery(aprovacaoCollection)
           .orderBy(firebase.firestore.FieldPath.documentId())
           .limit(normalizedBatchSize);
 
@@ -1132,7 +1133,7 @@ export async function listSolicitacoesAnalise(options = {}) {
       let exhausted = false;
 
       while (!exhausted && found.length < normalizedLimit && scanned < maxScannedDocs) {
-        let query = aprovacaoCollection
+        let query = tenantQuery(aprovacaoCollection)
           .orderBy('dataEntrada', 'desc')
           .limit(batchSize);
 
@@ -1217,7 +1218,7 @@ export async function listAprovacaoConversionLinks(options = {}) {
         const seenIds = new Set();
 
         for (const chunk of chunkArray(normalizedIds, 10)) {
-          const snapshot = await db.collection(APROVACAO_CONVERSAO_LINKS_COLLECTION)
+          const snapshot = await tenantQuery(db.collection(APROVACAO_CONVERSAO_LINKS_COLLECTION))
             .where('aprovacaoId', 'in', chunk)
             .limit(Math.min(limit, FIRESTORE_MAX_QUERY_LIMIT))
             .get();
@@ -1232,7 +1233,7 @@ export async function listAprovacaoConversionLinks(options = {}) {
         return items;
       }
 
-      let query = db.collection(APROVACAO_CONVERSAO_LINKS_COLLECTION);
+      let query = tenantQuery(db.collection(APROVACAO_CONVERSAO_LINKS_COLLECTION));
       const startKey = toDateForMetrics(dataInicio) ? formatDateKey(toDateForMetrics(dataInicio)) : null;
       const endKey = toDateForMetrics(dataFim, { endOfDay: true })
         ? formatDateKey(toDateForMetrics(dataFim, { endOfDay: true }))
@@ -1290,7 +1291,7 @@ export async function listAprovacaoSolicitacoesRecords(options = {}) {
   return cacheService.get(
     cacheKey,
     async () => {
-      let query = db.collection(APROVACAO_SOLICITACOES_COLLECTION)
+      let query = tenantQuery(db.collection(APROVACAO_SOLICITACOES_COLLECTION))
         .orderBy('createdAt', 'desc')
         .limit(normalizedLimit + 1);
 
@@ -1441,7 +1442,7 @@ export async function getAprovacaoStats(options = {}) {
         }
       }
 
-      let query = aprovacaoCollection;
+      let query = tenantQuery(aprovacaoCollection);
 
       // Escopo opcional: restringe analista ao proprio identificador apenas quando solicitado.
       if (shouldRestrictToCurrentAnalyst) {
@@ -1685,7 +1686,7 @@ export async function getAprovacaoConversionMetricsAggregate(options = {}) {
     ? formatDateKey(toDateForMetrics(dataFim, { endOfDay: true }))
     : null;
 
-  let linksQuery = db.collection(APROVACAO_CONVERSAO_LINKS_COLLECTION);
+  let linksQuery = tenantQuery(db.collection(APROVACAO_CONVERSAO_LINKS_COLLECTION));
   if (startKey) {
     linksQuery = linksQuery.where('approvalDateKey', '>=', startKey);
   }
@@ -1885,11 +1886,11 @@ export async function converterParaProcesso(aprovacaoId, options = {}) {
 
   // Cria o processo
   const processoRef = db.collection('contracts').doc();
-  batch.set(processoRef, processoData);
+  batch.set(processoRef, withTenantData(processoData));
 
   // Atualiza a aprovacao
   const aprovacaoRef = aprovacaoCollection.doc(aprovacaoId);
-  batch.update(aprovacaoRef, {
+  batch.update(aprovacaoRef, withTenantData({
     convertidoParaProcesso: true,
     processoId: processoRef.id,
     dataConversao: now,
@@ -1897,7 +1898,7 @@ export async function converterParaProcesso(aprovacaoId, options = {}) {
     atualizadoPor: currentUser.email || currentUser.uid,
     dataModificacao: now,
     modificadoPor: currentUser.email || currentUser.uid
-  });
+  }));
 
   await batch.commit();
 
@@ -2002,7 +2003,7 @@ export async function importAprovacoes(rows, onProgress = null, options = {}) {
         };
 
         const ref = aprovacaoCollection.doc();
-        batch.set(ref, aprovacaoData);
+        batch.set(ref, withTenantData(aprovacaoData));
         success++;
       } catch (error) {
         errors.push({ row: i + rows.indexOf(row), error: error.message });
@@ -2260,7 +2261,7 @@ function applyDateRangeToAprovacaoQuery(query, dataInicio, dataFim, field = 'dat
 }
 
 async function countConvertedAprovacoesByDateRange(dataInicio, dataFim) {
-  let query = aprovacaoCollection.where('convertidoParaProcesso', '==', true);
+  let query = tenantQuery(aprovacaoCollection).where('convertidoParaProcesso', '==', true);
   query = applyDateRangeToAprovacaoQuery(query, dataInicio, dataFim, 'dataAprovacao');
 
   if (typeof query.count !== 'function') {

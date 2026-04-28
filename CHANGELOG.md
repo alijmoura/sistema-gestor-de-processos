@@ -1,5 +1,16 @@
 <!-- markdownlint-disable MD022 MD024 MD032 MD004 -->
 # Changelog
+## [2026-04-28] - Base SaaS multiempresa
+### Adicionado
+- Painel interno `admin.html` para cadastro de empresas, vinculo de usuarios, metricas SaaS e geracao de cobranca Mercado Pago.
+- Cloud Functions administrativas para empresas, vinculos, overview SaaS, checkout Mercado Pago e webhook de pagamento.
+- Script `scripts/migrate-saas-tenant.js` com comandos `npm run saas:migrate:dry` e `npm run saas:migrate` para criar o tenant `ajsmtech-demo` e preencher `empresaId`/`tenantId`.
+
+### Alterado
+- `tenantService.js` passa a reconhecer `admin.ajsmtech.com`/`gestor.ajsmtech.com`, bloquear empresas suspensas/canceladas e expor helpers de tenant.
+- Regras Firestore e Storage passam a exigir isolamento por `empresaId` nas colecoes/caminhos operacionais principais.
+- Inicializacao Firebase duplicada em paginas WhatsApp/call foi centralizada no fluxo compat de `js/auth.js`.
+
 ## [2026-04-27] - Ajuste de ordenacao em relatorios
 ### Corrigido
 - `js/reportsPage.js` passa a ordenar o desempenho por Vendedor/Construtora pela coluna `Processos`, usando `Valor Total` e nome como desempate.

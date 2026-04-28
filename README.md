@@ -6,6 +6,19 @@ Estado: producao
 Ultima revisao deste README: 2026-04-24
 Historico de mudancas: `CHANGELOG.md`
 
+## SaaS multiempresa
+
+A base possui uma primeira camada SaaS por `empresaId`:
+
+- painel interno em `admin.html`, planejado para `admin.ajsmtech.com`;
+- empresas em `empresas/{empresaId}`;
+- vinculos em `user_tenants/{uid}_{empresaId}`;
+- tenant legado padrao: `ajsmtech-demo`;
+- backfill: `npm run saas:migrate:dry` e `npm run saas:migrate`;
+- cobranca Mercado Pago via `createMercadoPagoCheckout` e `mercadoPagoWebhook`.
+
+As colecoes operacionais devem sempre gravar `empresaId` e `tenantId`, e novas consultas devem filtrar pelo tenant atual.
+
 ## Sumario
 
 1. [Visao geral](#visao-geral)

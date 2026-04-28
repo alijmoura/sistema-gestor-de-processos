@@ -9,6 +9,8 @@ Este projeto esta sendo preparado para operar como SaaS multiempresa em subdomin
 - Painel interno: `admin.ajsmtech.com`
 - Empresas: `*.ajsmtech.com`
 
+Setup operacional do Firebase e Mercado Pago: `docs/setup-firebase-mercado-pago.md`.
+
 Exemplo:
 
 ```txt
@@ -65,10 +67,52 @@ window.appState.currentTenant
 window.appState.currentEmpresaId
 ```
 
+## Implementacao inicial
+
+### Painel interno
+
+- Arquivo: `admin.html`
+- Entrada JS: `js/pages/adminSaasPage.js`
+- Dominio alvo: `admin.ajsmtech.com`
+- Acesso: usuarios com custom claim `admin` ou `super_admin`.
+
+### Migracao da base validada
+
+```bash
+npm run saas:migrate:dry
+npm run saas:migrate
+```
+
+O script cria/atualiza `empresas/ajsmtech-demo`, vincula usuarios atuais em `user_tenants` e preenche `empresaId`/`tenantId` nas colecoes operacionais conhecidas.
+
+### Mercado Pago
+
+Configure as variaveis de ambiente no runtime das Cloud Functions:
+
+```txt
+MERCADO_PAGO_ACCESS_TOKEN
+MERCADO_PAGO_WEBHOOK_SECRET
+SAAS_PRIMARY_DOMAIN
+```
+
+Endpoints adicionados:
+
+- `createMercadoPagoCheckout`
+- `mercadoPagoWebhook`
+
+### Regras
+
+As regras de Firestore e Storage passaram a exigir `empresaId` para colecoes operacionais. Caminhos novos de Storage devem usar:
+
+```txt
+empresas/{empresaId}/contracts/{contractId}/{filename}
+empresas/{empresaId}/whatsapp/{chatId}/{filename}
+empresas/{empresaId}/activity-audit/{module}/{year}/{month}/{filename}
+```
+
 ## Proximas etapas tecnicas
 
-1. Migrar documentos existentes para receber `empresaId`.
-2. Aplicar `where('empresaId', '==', empresaId)` em todas as consultas operacionais.
-3. Endurecer `firestore.rules` das colecoes existentes para exigir `empresaId`.
-4. Criar painel interno para cadastrar empresas, vincular usuarios e controlar planos.
-5. Integrar cobranca recorrente e atualizar `empresas/{empresaId}.assinatura`.
+1. Continuar removendo acessos diretos a colecoes raiz nos servicos especializados.
+2. Ajustar agregados server-side para particionamento por empresa.
+3. Adicionar testes de rules no emulator cobrindo vazamento cross-tenant.
+4. Configurar DNS wildcard e dominios customizados no Firebase Hosting.

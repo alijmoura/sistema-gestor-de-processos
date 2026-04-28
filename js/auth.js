@@ -1,17 +1,17 @@
 // Configuração correta do Firebase
 const firebaseConfig = {
-  apiKey: "INSIRA_SUA_FIREBASE_API_KEY",
-  authDomain: "sistema-gestor-de-processos-demo.firebaseapp.com",
-  projectId: "sistema-gestor-de-processos-demo",
-  storageBucket: "sistema-gestor-de-processos-demo.firebasestorage.app",
-  messagingSenderId: "1006439848000",
-  appId: "1:1006439848000:web:ac01b59ce0c4d7c1c87100",
-  measurementId: "G-YFY3HFYYKB"
+  apiKey: "AIzaSyAhDc_xbGWnB8RplOX1BtGjj_CBtje2agA",
+  authDomain: "gestor-de-processos-a541c.firebaseapp.com",
+  projectId: "gestor-de-processos-a541c",
+  storageBucket: "gestor-de-processos-a541c.firebasestorage.app",
+  messagingSenderId: "850717432958",
+  appId: "1:850717432958:web:7f0c99874f63541d6fcc2f",
+  measurementId: "G-DH56341485"
 };
 
 //  SEGURANÇA: Configuração do App Check
 // ATENÇÃO: Configure a chave reCAPTCHA v3 no Firebase Console
-// https://console.firebase.google.com/project/sistema-gestor-de-processos-demo/appcheck
+// https://console.firebase.google.com/project/gestor-de-processos-a541c/appcheck
 const APP_CHECK_CONFIG = {
   // TEMPORARIAMENTE DESABILITADO até configurar no Console
   enabled: false, // Mude para true após configurar reCAPTCHA no Console

@@ -1,27 +1,5 @@
-// Configuracao do Firebase (mesma do sistema principal)
-const firebaseConfig = {
-  apiKey: "INSIRA_SUA_FIREBASE_API_KEY",
-  authDomain: "sistema-gestor-de-processos-demo.firebaseapp.com",
-  projectId: "sistema-gestor-de-processos-demo",
-  storageBucket: "sistema-gestor-de-processos-demo.firebasestorage.app",
-  messagingSenderId: "1006439848000",
-  appId: "1:1006439848000:web:ac01b59ce0c4d7c1c87100",
-  measurementId: "G-YFY3HFYYKB",
-};
-
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(firebaseConfig);
-  if (window.__DEBUG__) {
-    console.log("[whatsapp-dashboard] Firebase inicializado");
-  }
-}
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-const functions = firebase.functions();
-
-window.auth = auth;
-window.db = db;
+import { auth, db, functions } from '../auth.js';
+import { resolveTenantContext } from '../tenantService.js';
 
 async function enforcePasswordPolicyOrRedirect() {
   try {
@@ -51,6 +29,15 @@ auth.onAuthStateChanged(async (user) => {
 
   const canProceed = await enforcePasswordPolicyOrRedirect();
   if (!canProceed) {
+    return;
+  }
+
+  try {
+    await resolveTenantContext({ user });
+  } catch (error) {
+    console.error("[whatsapp-dashboard] Falha ao resolver empresa:", error);
+    await auth.signOut().catch(() => {});
+    window.location.href = "login.html?reason=tenant";
     return;
   }
 
