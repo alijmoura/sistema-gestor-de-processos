@@ -16,7 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Verifica se houve logout por inatividade
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('reason') === 'inactivity') {
+    const reason = urlParams.get('reason');
+    if (reason === 'tenant') {
+        showError('Seu usuario nao esta vinculado a esta empresa. Verifique o endereco acessado ou fale com o administrador.');
+        return;
+    }
+
+    if (reason === 'inactivity') {
         showError('Sua sessão expirou por inatividade (12h). Por favor, faça login novamente.');
     }
 });

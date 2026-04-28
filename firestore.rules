@@ -19,6 +19,28 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
+
+    function userTenantDocId(empresaId) {
+      return request.auth.uid + "_" + empresaId;
+    }
+
+    function hasTenantAccess(empresaId) {
+      return isAdmin()
+        || (
+          isAuthenticated()
+          && empresaId is string
+          && exists(/databases/$(database)/documents/user_tenants/$(userTenantDocId(empresaId)))
+          && get(/databases/$(database)/documents/user_tenants/$(userTenantDocId(empresaId))).data.status == "ativo"
+        );
+    }
+
+    function isTenantAdmin(empresaId) {
+      return isAdmin()
+        || (
+          hasTenantAccess(empresaId)
+          && get(/databases/$(database)/documents/user_tenants/$(userTenantDocId(empresaId))).data.role in ["empresa_admin", "admin", "super_admin"]
+        );
+    }
     
     // Verifica se o usuário é um agente WhatsApp registrado
     function isWhatsAppAgent() {
@@ -34,6 +56,39 @@ service cloud.firestore {
     }
     
     // ===================== REGRAS EXISTENTES (mantidas) =====================
+
+    // ===================== SAAS / MULTIEMPRESA =====================
+
+    match /empresas/{empresaId} {
+      allow read: if hasTenantAccess(empresaId);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /user_tenants/{membershipId} {
+      allow read: if isAdmin()
+        || (
+          isAuthenticated()
+          && resource.data.uid == request.auth.uid
+          && hasTenantAccess(resource.data.empresaId)
+        )
+        || (
+          isAuthenticated()
+          && isTenantAdmin(resource.data.empresaId)
+        );
+
+      allow create, update, delete: if isAdmin()
+        || (
+          isAuthenticated()
+          && request.resource.data.empresaId is string
+          && isTenantAdmin(request.resource.data.empresaId)
+        );
+    }
+
+    match /tenant_settings/{settingId} {
+      allow read: if hasTenantAccess(resource.data.empresaId);
+      allow create: if hasTenantAccess(request.resource.data.empresaId);
+      allow update, delete: if isTenantAdmin(resource.data.empresaId);
+    }
     
     // Coleção de contratos
     match /contracts/{contractId} {

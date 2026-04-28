@@ -2,6 +2,7 @@ import { auth } from '../auth.js';
 import { redirectToLogin } from '../authRedirect.js';
 import { firestoreService } from '../firestoreService.js';
 import permissionsUIHelper from '../permissionsUIHelper.js';
+import { resolveTenantContext } from '../tenantService.js';
 import '../firestoreReadMetricsService.js';
 import '../firestoreReadMonitor.js';
 
@@ -233,6 +234,16 @@ export function startAuthenticatedPage({
       return;
     }
 
+    let tenantContext = null;
+    try {
+      tenantContext = await resolveTenantContext({ user });
+    } catch (error) {
+      console.error(`[authenticatedPageBootstrap] Falha ao resolver empresa para "${pageId}":`, error);
+      await auth.signOut().catch(() => {});
+      redirectToLogin({ reason: 'tenant' });
+      return;
+    }
+
     const permissionsPromise = permissionsUIHelper.init();
     const profilePromise = firestoreService.getUserProfile(user.uid)
       .then((profile) => {
@@ -281,7 +292,10 @@ export function startAuthenticatedPage({
     await pageModule.initialize({
       pageId,
       user,
-      isAdmin
+      isAdmin,
+      tenantContext,
+      tenant: tenantContext?.tenant || null,
+      empresaId: tenantContext?.tenantId || ''
     });
 
     state.initialized = true;

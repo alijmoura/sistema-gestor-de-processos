@@ -22,6 +22,7 @@ import {
   getConsultaKeyState,
 } from "./consultaKeyService.js";
 import { activityLogService } from "./activityLogService.js";
+import { getCurrentTenantId, withTenantData } from "./tenantService.js";
 
 const DATE_FIELDS_SET = new Set(
   DATE_FIELDS_IMPORT.map((field) => String(field || "").toLowerCase())
@@ -1734,12 +1735,12 @@ export async function updateContract(id, updatedData, originalData, userProfile)
       ? userProfile.fullName 
       : user.email;
   
-  const dataToSave = {
+  const dataToSave = withTenantData({
     ...updatedData,
     ultimoAnalistaAlteracao, // Novo campo: rastreia quem fez a última alteração
     modificadoPor: user.email,
     dataModificacao: new Date(),
-  };
+  });
 
   // Lógica do statusChangedAt para SLA por status:
   // 1. Se o status mudou → atualiza para agora
@@ -2251,13 +2252,13 @@ export async function addContract(data) {
     clientePrincipal = data.cliente;
   }
 
-  const contrato = {
+  const contrato = withTenantData({
     ...data,
     compradores: sanitizedCompradores,
     clientePrincipal, // Adiciona o campo
     criadoEm: new Date(),
     entrada: data.entrada || new Date(), // Define data de entrada automaticamente se não fornecida
-  };
+  });
 
   applyConsultaFieldsToPayload(contrato, contrato);
 
@@ -3615,6 +3616,10 @@ export async function importCsvWithAI(csvText, prebuiltErrorLogs = []) {
   const result = await batchImportContracts(normalizedContracts, errorLogs);
   await auditContractsCsvImport(csvText, result, 'importCsvWithAI');
   return result; // { importedCount, totalBatches }
+}
+
+export function getCurrentEmpresaId() {
+  return getCurrentTenantId();
 }
 
 /**
@@ -6164,6 +6169,7 @@ export const firestoreService = {
     getWhatsappAgentsForReports,
     getWhatsappMetricsCurrent,
     getWhatsappMetricsDailyForReports,
+    getCurrentEmpresaId,
     getUserProfile,
     updateUserProfile,
     createNewUser,
